@@ -1,6 +1,10 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Idle Finance",
+
+  "name": "Idle Finance",
+  "description": "Gnosis Safe App for Idle Finance",
+  "iconPath": "logo.svg",
+
   "icons": [
     {
       "src": "favicon.ico",
