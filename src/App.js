@@ -1,38 +1,61 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { ThemeProvider } from "styled-components";
 import { Button, Title, Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
-
-import "./App.css";
+import { getToken, formatUnits } from "./utils";
+import { reducer, initialState, actions } from "./reducer";
 
 const App = () => {
   const [appsSdk] = useState(initSdk());
-  const [safeInfo, setSafeInfo] = useState();
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     appsSdk.addListeners({
-      onSafeInfo: setSafeInfo,
+      onSafeInfo: (safeInfo) => {
+        dispatch(actions.setSafeInfo(safeInfo));
+      },
     });
 
     return () => appsSdk.removeListeners();
   }, [appsSdk]);
 
   useEffect(() => {
-    if (safeInfo !== undefined) {
-      console.log(safeInfo);
+    const getTokens = async () => {
+      const { network, safeAddress } = state.safeInfo;
+
+      const daiToken = await getToken(network, safeAddress, "dai");
+      const usdcToken = await getToken(network, safeAddress, "usdc");
+      const usdtToken = await getToken(network, safeAddress, "usdt");
+
+      dispatch(actions.setToken(daiToken));
+      dispatch(actions.setToken(usdcToken));
+      dispatch(actions.setToken(usdtToken));
+    };
+
+    if (state.isLoaded) {
+      getTokens();
     }
-  }, [safeInfo]);
+  }, [state.isLoaded, state.safeInfo]);
+
+  if (!state.isLoaded) {
+    return <Loader />;
+  }
+
+  const { dai, usdc, usdt } = state.tokens;
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="App">
+      <div>
         <Title size="md">Idle finance</Title>
+
+        <Text size="lg">DAI: {formatUnits(dai.balance, dai.decimals)}</Text>
+        <Text size="lg">USDC: {formatUnits(usdc.balance, usdc.decimals)}</Text>
+        <Text size="lg">USDT: {formatUnits(usdt.balance, usdt.decimals)}</Text>
+
         <Button size="lg" color="primary" variant="contained">
-          Deposit
+          Not implemented yet
         </Button>
-        <Loader />
-        <Text size="lg">Test text</Text>
       </div>
     </ThemeProvider>
   );

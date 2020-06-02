@@ -1,4 +1,4 @@
-import abi from "abi/erc20.json";
+import abi from "./abi/erc20.json";
 
 const mainnet = {
   dai: {
