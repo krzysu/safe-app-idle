@@ -3,7 +3,7 @@ import { ThemeProvider } from "styled-components";
 import { Button, Title, Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
-import { getToken, formatUnits } from "./utils";
+import { initAllTokens, formatUnits } from "./utils";
 import { reducer, initialState, actions } from "./reducer";
 
 const App = () => {
@@ -21,37 +21,65 @@ const App = () => {
   }, [appsSdk]);
 
   useEffect(() => {
-    const getTokens = async () => {
-      const { network, safeAddress } = state.safeInfo;
+    const { network, safeAddress } = state.safeInfo;
 
-      const daiToken = await getToken(network, safeAddress, "dai");
-      const usdcToken = await getToken(network, safeAddress, "usdc");
-      const usdtToken = await getToken(network, safeAddress, "usdt");
-
-      dispatch(actions.setToken(daiToken));
-      dispatch(actions.setToken(usdcToken));
-      dispatch(actions.setToken(usdtToken));
+    const initTokens = async () => {
+      const tokens = await initAllTokens(network, safeAddress);
+      dispatch(actions.setTokens(tokens));
     };
 
-    if (state.isLoaded) {
-      getTokens();
+    if (safeAddress !== "") {
+      initTokens();
     }
-  }, [state.isLoaded, state.safeInfo]);
+  }, [state.safeInfo]);
 
   if (!state.isLoaded) {
     return <Loader />;
   }
 
-  const { dai, usdc, usdt } = state.tokens;
+  const {
+    dai,
+    usdc,
+    usdt,
+    idleMaxYieldDai,
+    idleMaxYieldUsdc,
+    idleMaxYieldUsdt,
+    idleRiskAdjustedDai,
+    idleRiskAdjustedUsdc,
+    idleRiskAdjustedUsdt,
+  } = state.tokens;
+
+  console.log(state);
+
+  const renderToken = (name, token) => (
+    <Text size="lg">
+      {name}: {formatUnits(token.balance, token.decimals)}
+    </Text>
+  );
+
+  const renderIdleToken = (name, token) => (
+    <Text size="lg">
+      {name}: {formatUnits(token.balance, token.decimals)}, APR:{" "}
+      {formatUnits(token.avgAPR, 1)}
+    </Text>
+  );
 
   return (
     <ThemeProvider theme={theme}>
       <div>
         <Title size="md">Idle finance</Title>
 
-        <Text size="lg">DAI: {formatUnits(dai.balance, dai.decimals)}</Text>
-        <Text size="lg">USDC: {formatUnits(usdc.balance, usdc.decimals)}</Text>
-        <Text size="lg">USDT: {formatUnits(usdt.balance, usdt.decimals)}</Text>
+        {renderToken("DAI", dai)}
+        {renderToken("USDC", usdc)}
+        {renderToken("USDT", usdt)}
+
+        {renderIdleToken("idleMaxYieldDai", idleMaxYieldDai)}
+        {renderIdleToken("idleMaxYieldUsdc", idleMaxYieldUsdc)}
+        {renderIdleToken("idleMaxYieldUsdt", idleMaxYieldUsdt)}
+
+        {renderIdleToken("idleRiskAdjustedDai", idleRiskAdjustedDai)}
+        {renderIdleToken("idleRiskAdjustedUsdc", idleRiskAdjustedUsdc)}
+        {renderIdleToken("idleRiskAdjustedUsdt", idleRiskAdjustedUsdt)}
 
         <Button size="lg" color="primary" variant="contained">
           Not implemented yet
