@@ -68,6 +68,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
                       color="primary"
                       variant="contained"
                       onClick={onDeposit(token.erc20, token.idle, "1")}
+                      disabled
                     >
                       Deposit
                     </Button>
@@ -78,6 +79,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
                       color="secondary"
                       variant="contained"
                       onClick={onWithdraw(token.idle)}
+                      disabled
                     >
                       Withdraw
                     </Button>

@@ -4,6 +4,10 @@
   "name": "Idle",
   "description": "Earn the yield you deserve without worry about finding the best option.",
   "iconPath": "logo.svg",
+  "providedBy": {
+    "name": "Kris Urbas @krzysu",
+    "url": "https://github.com/krzysu/safe-app-idle"
+  },
 
   "icons": [
     {

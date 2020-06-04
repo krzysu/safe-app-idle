@@ -11,8 +11,10 @@ import tokens, {
 export const formatUnits = (balance = "0", decimals = 18) =>
   ethers.utils.formatUnits(balance, decimals);
 
-export const formatAPR = (balance = "0") =>
-  `${ethers.utils.formatUnits(balance, 1)}%`;
+export const formatAPR = (balance = "0") => {
+  const aprString = ethers.utils.formatUnits(balance, 18);
+  return `${Number.parseFloat(aprString).toFixed(2)}%`;
+};
 
 export const parseUnits = (valueString, decimals = 18) =>
   ethers.utils.parseUnits(valueString, decimals);
