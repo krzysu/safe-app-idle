@@ -3,7 +3,8 @@ import { ThemeProvider } from "styled-components";
 import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
-import { initAllTokens, formatUnits } from "./utils";
+
+import { initAllTokens, parseUnits } from "./utils";
 import { reducer, initialState, actions } from "./reducer";
 import Header from "./components/Header";
 import Table from "./components/Table";
@@ -55,35 +56,67 @@ const App = () => {
     idleRiskAdjustedUsdt,
   } = state.tokens;
 
-  const handleDeposit = () => {
-    console.log("handleDeposit");
+  const handleDeposit = (erc20, idle, amount) => () => {
+    const amountWei = parseUnits(amount, erc20.decimals);
+
+    // deposit 1 DAI for now
+    const txs = [
+      {
+        to: erc20.contract.address,
+        value: 0,
+        data: erc20.contract.interface.functions.approve.encode([
+          idle.contract.address,
+          amountWei,
+        ]),
+      },
+      {
+        to: idle.contract.address,
+        value: 0,
+        data: idle.contract.interface.functions.mintIdleToken.encode([
+          amountWei,
+          true,
+        ]),
+      },
+    ];
+
+    appsSdk.sendTransactions(txs);
   };
 
-  const handleWithdraw = () => {
-    console.log("handleWithdraw");
+  const handleWithdraw = (idle) => () => {
+    // withdraw everything for now
+    const txs = [
+      {
+        to: idle.contract.address,
+        value: 0,
+        data: idle.contract.interface.functions.redeemIdleToken.encode([
+          idle.balance,
+          true,
+          [],
+        ]),
+      },
+    ];
+
+    appsSdk.sendTransactions(txs);
   };
 
   const bestYieldTokens = [
     {
       name: "dai",
       logo: daiSrc,
-      funds: dai,
-      deposit: idleMaxYieldDai,
-      avgAPR: idleMaxYieldDai.avgAPR,
+      erc20: dai,
+      idle: idleMaxYieldDai,
     },
     {
       name: "usdc",
       logo: usdcSrc,
-      funds: usdc,
-      deposit: idleMaxYieldUsdc,
-      avgAPR: idleMaxYieldUsdc.avgAPR,
+      erc20: usdc,
+      idle: idleMaxYieldUsdc,
     },
     {
       name: "usdt",
       logo: usdtSrc,
-      funds: usdt,
-      deposit: idleMaxYieldUsdt,
-      avgAPR: idleMaxYieldUsdt.avgAPR,
+      erc20: usdt,
+      idle: idleMaxYieldUsdt,
     },
   ];
 
@@ -91,23 +124,20 @@ const App = () => {
     {
       name: "dai",
       logo: daiSrc,
-      funds: dai,
-      deposit: idleRiskAdjustedDai,
-      avgAPR: idleRiskAdjustedDai.avgAPR,
+      erc20: dai,
+      idle: idleRiskAdjustedDai,
     },
     {
       name: "usdc",
       logo: usdcSrc,
-      funds: usdc,
-      deposit: idleRiskAdjustedUsdc,
-      avgAPR: idleRiskAdjustedUsdc.avgAPR,
+      erc20: usdc,
+      idle: idleRiskAdjustedUsdc,
     },
     {
       name: "usdt",
       logo: usdtSrc,
-      funds: usdt,
-      deposit: idleRiskAdjustedUsdt,
-      avgAPR: idleRiskAdjustedUsdt.avgAPR,
+      erc20: usdt,
+      idle: idleRiskAdjustedUsdt,
     },
   ];
 
@@ -127,7 +157,12 @@ const App = () => {
         onWithdraw={handleWithdraw}
       />
       <footer>
-        <Text size="md">Disclaimer TODO</Text>
+        <Text size="md">
+          Disclaimer: The author of this app did his best to provide fully
+          functional service. Despite that, the author doesn't take any
+          responsibility for the app. Interacting with this app is at your own
+          risk.
+        </Text>
       </footer>
     </ThemeProvider>
   );

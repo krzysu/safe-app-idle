@@ -5,11 +5,10 @@ import { formatUnits, formatAPR } from "../utils";
 import styles from "./Table.module.css";
 
 /* const tokens = {
-    name: 'DAI',
-    logo: '',
-    funds: {balance, decimals},
-    deposit: {balance, decimals},
-    avgAPR: ''
+    name: "usdt",
+    logo: usdtSrc,
+    erc20: usdt,
+    idle: idleMaxYieldUsdt,
 }
 */
 
@@ -50,16 +49,16 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
               </td>
               <td>
                 <Text size="lg">
-                  {formatUnits(token.funds.balance, token.funds.decimals)}
+                  {formatUnits(token.erc20.balance, token.erc20.decimals)}
                 </Text>
               </td>
               <td>
                 <Text size="lg">
-                  {formatUnits(token.deposit.balance, token.deposit.decimals)}
+                  {formatUnits(token.idle.balance, token.idle.decimals)}
                 </Text>
               </td>
               <td>
-                <Text size="lg">{formatAPR(token.avgAPR)}</Text>
+                <Text size="lg">{formatAPR(token.idle.avgAPR)}</Text>
               </td>
               <td>
                 <div className={styles.buttons}>
@@ -68,7 +67,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
                       size="md"
                       color="primary"
                       variant="contained"
-                      onClick={onDeposit}
+                      onClick={onDeposit(token.erc20, token.idle, "1")}
                     >
                       Deposit
                     </Button>
@@ -78,7 +77,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
                       size="md"
                       color="secondary"
                       variant="contained"
-                      onClick={onWithdraw}
+                      onClick={onWithdraw(token.idle)}
                     >
                       Withdraw
                     </Button>

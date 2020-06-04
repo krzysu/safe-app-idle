@@ -14,6 +14,9 @@ export const formatUnits = (balance = "0", decimals = 18) =>
 export const formatAPR = (balance = "0") =>
   `${ethers.utils.formatUnits(balance, 1)}%`;
 
+export const parseUnits = (valueString, decimals = 18) =>
+  ethers.utils.parseUnits(valueString, decimals);
+
 const getProvider = (network = "rinkeby") => {
   const provider = new ethers.providers.JsonRpcProvider(
     `https://${network}.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`

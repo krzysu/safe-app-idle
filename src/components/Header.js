@@ -12,7 +12,12 @@ const Header = () => (
     <Title size="xs">
       Earn the yield you deserve without worry about finding the best option,
       either if you want to optimize returns or risks.{" "}
-      <a href="https://idle.finance/" target="_blank" rel="noopener noreferrer">
+      <a
+        className={styles.link}
+        href="https://idle.finance/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Read more here.
       </a>
     </Title>
