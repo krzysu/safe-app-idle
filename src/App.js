@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { ThemeProvider } from "styled-components";
-import { Button, Title, Text, Loader } from "@gnosis.pm/safe-react-components";
+import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 import { initAllTokens, formatUnits } from "./utils";
 import { reducer, initialState, actions } from "./reducer";
+import Header from "./components/Header";
+import Table from "./components/Table";
+
+import daiSrc from "./assets/dai.svg";
+import usdcSrc from "./assets/usdc.svg";
+import usdtSrc from "./assets/usdt.svg";
 
 const App = () => {
   const [appsSdk] = useState(initSdk());
@@ -34,7 +40,7 @@ const App = () => {
   }, [state.safeInfo]);
 
   if (!state.isLoaded) {
-    return <Loader />;
+    return <Loader size="md" />;
   }
 
   const {
@@ -49,42 +55,80 @@ const App = () => {
     idleRiskAdjustedUsdt,
   } = state.tokens;
 
-  console.log(state);
+  const handleDeposit = () => {
+    console.log("handleDeposit");
+  };
 
-  const renderToken = (name, token) => (
-    <Text size="lg">
-      {name}: {formatUnits(token.balance, token.decimals)}
-    </Text>
-  );
+  const handleWithdraw = () => {
+    console.log("handleWithdraw");
+  };
 
-  const renderIdleToken = (name, token) => (
-    <Text size="lg">
-      {name}: {formatUnits(token.balance, token.decimals)}, APR:{" "}
-      {formatUnits(token.avgAPR, 1)}
-    </Text>
-  );
+  const bestYieldTokens = [
+    {
+      name: "dai",
+      logo: daiSrc,
+      funds: dai,
+      deposit: idleMaxYieldDai,
+      avgAPR: idleMaxYieldDai.avgAPR,
+    },
+    {
+      name: "usdc",
+      logo: usdcSrc,
+      funds: usdc,
+      deposit: idleMaxYieldUsdc,
+      avgAPR: idleMaxYieldUsdc.avgAPR,
+    },
+    {
+      name: "usdt",
+      logo: usdtSrc,
+      funds: usdt,
+      deposit: idleMaxYieldUsdt,
+      avgAPR: idleMaxYieldUsdt.avgAPR,
+    },
+  ];
+
+  const riskAdjustedTokens = [
+    {
+      name: "dai",
+      logo: daiSrc,
+      funds: dai,
+      deposit: idleRiskAdjustedDai,
+      avgAPR: idleRiskAdjustedDai.avgAPR,
+    },
+    {
+      name: "usdc",
+      logo: usdcSrc,
+      funds: usdc,
+      deposit: idleRiskAdjustedUsdc,
+      avgAPR: idleRiskAdjustedUsdc.avgAPR,
+    },
+    {
+      name: "usdt",
+      logo: usdtSrc,
+      funds: usdt,
+      deposit: idleRiskAdjustedUsdt,
+      avgAPR: idleRiskAdjustedUsdt.avgAPR,
+    },
+  ];
 
   return (
     <ThemeProvider theme={theme}>
-      <div>
-        <Title size="md">Idle finance</Title>
-
-        {renderToken("DAI", dai)}
-        {renderToken("USDC", usdc)}
-        {renderToken("USDT", usdt)}
-
-        {renderIdleToken("idleMaxYieldDai", idleMaxYieldDai)}
-        {renderIdleToken("idleMaxYieldUsdc", idleMaxYieldUsdc)}
-        {renderIdleToken("idleMaxYieldUsdt", idleMaxYieldUsdt)}
-
-        {renderIdleToken("idleRiskAdjustedDai", idleRiskAdjustedDai)}
-        {renderIdleToken("idleRiskAdjustedUsdc", idleRiskAdjustedUsdc)}
-        {renderIdleToken("idleRiskAdjustedUsdt", idleRiskAdjustedUsdt)}
-
-        <Button size="lg" color="primary" variant="contained">
-          Not implemented yet
-        </Button>
-      </div>
+      <Header />
+      <Table
+        title="Best-Yield - Maximize your returns"
+        tokens={bestYieldTokens}
+        onDeposit={handleDeposit}
+        onWithdraw={handleWithdraw}
+      />
+      <Table
+        title="Risk-Adjusted - Optimize your risk exposure"
+        tokens={riskAdjustedTokens}
+        onDeposit={handleDeposit}
+        onWithdraw={handleWithdraw}
+      />
+      <footer>
+        <Text size="md">Disclaimer TODO</Text>
+      </footer>
     </ThemeProvider>
   );
 };

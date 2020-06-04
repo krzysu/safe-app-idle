@@ -11,6 +11,9 @@ import tokens, {
 export const formatUnits = (balance = "0", decimals = 18) =>
   ethers.utils.formatUnits(balance, decimals);
 
+export const formatAPR = (balance = "0") =>
+  `${ethers.utils.formatUnits(balance, 1)}%`;
+
 const getProvider = (network = "rinkeby") => {
   const provider = new ethers.providers.JsonRpcProvider(
     `https://${network}.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
