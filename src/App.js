@@ -47,7 +47,8 @@ const App = () => {
     return <Loader size="md" />;
   }
 
-  const goToDeposit = () => {
+  const goToDeposit = (tokenId, strategyId) => () => {
+    console.log(tokenId, strategyId);
     setCurrentPage(PAGE_DEPOSIT);
   };
   const goToWithdraw = () => {

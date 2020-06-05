@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Text,
@@ -7,11 +7,20 @@ import {
 } from "@gnosis.pm/safe-react-components";
 import TokenSelect from "../components/TokenSelect";
 import StrategySelect from "../components/StrategySelect";
-import { parseUnits } from "../utils";
+import { parseUnits, formatToken, formatAPR, getIdleTokenId } from "../utils";
+import { STRATEGY_MAXYIELD } from "../tokens";
 
 import styles from "./Deposit.module.css";
 
-const Deposit = ({ state, onBackClick }) => {
+const Deposit = ({
+  state,
+  defaultTokenId = "dai",
+  defaultStrategyId = STRATEGY_MAXYIELD,
+  onBackClick,
+}) => {
+  const [tokenId, setTokenId] = useState(defaultTokenId);
+  const [strategyId, setStrategyId] = useState(defaultStrategyId);
+
   const handleDeposit = (erc20, idle, amount) => () => {
     const amountWei = parseUnits(amount, erc20.decimals);
 
@@ -42,65 +51,75 @@ const Deposit = ({ state, onBackClick }) => {
     <React.Fragment>
       <Title size="xs">Deposit</Title>
 
-      <form onSubmit={() => {}}>
-        <div className={styles.row}>
-          <div>
-            <label>
-              <Text size="lg">Strategy</Text>
-            </label>
-            <StrategySelect />
-          </div>
-          <div>
-            <label>
-              <Text size="lg">APR</Text>
-            </label>
-            <div>
-              <Text size="xl">3.0%</Text>
-            </div>
+      <form onSubmit={() => {}} className={styles.form}>
+        <div>
+          <label>
+            <Text size="lg">Strategy</Text>
+          </label>
+          <StrategySelect value={strategyId} onChange={setStrategyId} />
+        </div>
+        <div>
+          <label>
+            <Text size="lg">APR</Text>
+          </label>
+          <div className={styles.apr}>
+            <Text size="xl">
+              {formatAPR(
+                state.tokens[getIdleTokenId(tokenId, strategyId)].avgAPR
+              )}
+            </Text>
           </div>
         </div>
-        <div className={styles.row}>
+        <div>
+          <label>
+            <Text size="lg">Asset</Text>
+          </label>
+          <TokenSelect value={tokenId} onChange={setTokenId} />
+        </div>
+        <div>
+          <label className={styles.amount}>
+            <Text size="lg">Balance: {formatToken(state.tokens[tokenId])}</Text>
+          </label>
           <div>
-            <label>
-              <Text size="lg">Asset</Text>
-            </label>
-            <TokenSelect />
-          </div>
-          <div>
-            <label>
-              <Text size="lg">Amount</Text>
-            </label>
-            <div>
-              <TextField label="Amount" defaultValue="" />
-              <Text size="md">Balance: 123 DAI</Text>
-              <a href="#">
+            <TextField label="Amount" defaultValue="" />
+            <div className={styles.split}>
+              <button className={styles.link}>
+                <Text size="md">25%</Text>
+              </button>
+              <button className={styles.link}>
+                <Text size="md">50%</Text>
+              </button>
+              <button className={styles.link}>
+                <Text size="md">75%</Text>
+              </button>
+              <button className={styles.link}>
                 <Text size="md">MAX</Text>
-              </a>
+              </button>
             </div>
           </div>
         </div>
 
-        <div className={styles.row}>
-          <Button
-            size="lg"
-            color="primary"
-            variant="contained"
-            type="submit"
-            disabled
-          >
-            Deposit
-          </Button>
-        </div>
-      </form>
+        <Button
+          size="lg"
+          color="primary"
+          variant="contained"
+          type="submit"
+          disabled
+          className={styles.button}
+        >
+          Deposit
+        </Button>
 
-      <Button
-        size="md"
-        color="primary"
-        variant="contained"
-        onClick={onBackClick}
-      >
-        Back
-      </Button>
+        <Button
+          size="md"
+          color="secondary"
+          type="button"
+          className={styles.button}
+          onClick={onBackClick}
+        >
+          Cancel and go back
+        </Button>
+      </form>
     </React.Fragment>
   );
 };

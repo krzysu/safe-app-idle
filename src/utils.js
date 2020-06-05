@@ -6,10 +6,33 @@ import tokens, {
   TOKEN_IDLE_RISKADJUSTED_USDT,
   TOKEN_IDLE_RISKADJUSTED_DAI,
   TOKEN_IDLE_RISKADJUSTED_USDC,
+  STRATEGY_MAXYIELD,
+  STRATEGY_RISKADJUSTED,
 } from "./tokens";
 
+const TOKEN_IDS_MAPPING = {
+  [STRATEGY_MAXYIELD]: {
+    dai: TOKEN_IDLE_MAXYIELD_DAI,
+    usdc: TOKEN_IDLE_MAXYIELD_USDC,
+    usdt: TOKEN_IDLE_MAXYIELD_USDT,
+  },
+  [STRATEGY_RISKADJUSTED]: {
+    dai: TOKEN_IDLE_RISKADJUSTED_DAI,
+    usdc: TOKEN_IDLE_RISKADJUSTED_USDC,
+    usdt: TOKEN_IDLE_RISKADJUSTED_USDT,
+  },
+};
+
+export const getIdleTokenId = (tokenId, strategyId) => {
+  return TOKEN_IDS_MAPPING[strategyId][tokenId];
+};
 export const formatUnits = (balance = "0", decimals = 18) =>
   ethers.utils.formatUnits(balance, decimals);
+
+export const formatToken = ({ balance, decimals, name }) => {
+  const balanceString = ethers.utils.formatUnits(balance, decimals);
+  return `${Number.parseFloat(balanceString).toFixed(4)} ${name.toUpperCase()}`;
+};
 
 export const formatAPR = (balance = "0") => {
   const aprString = ethers.utils.formatUnits(balance, 18);

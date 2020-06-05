@@ -1,6 +1,7 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Table from "../components/Table";
+import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../tokens";
 
 import daiSrc from "../assets/dai.svg";
 import usdcSrc from "../assets/usdc.svg";
@@ -25,43 +26,43 @@ const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
 
   const bestYieldTokens = [
     {
-      name: "dai",
       logo: daiSrc,
       erc20: dai,
       idle: idleMaxYieldDai,
+      strategyId: STRATEGY_MAXYIELD,
     },
     {
-      name: "usdc",
       logo: usdcSrc,
       erc20: usdc,
       idle: idleMaxYieldUsdc,
+      strategyId: STRATEGY_MAXYIELD,
     },
     {
-      name: "usdt",
       logo: usdtSrc,
       erc20: usdt,
       idle: idleMaxYieldUsdt,
+      strategyId: STRATEGY_MAXYIELD,
     },
   ];
 
   const riskAdjustedTokens = [
     {
-      name: "dai",
       logo: daiSrc,
       erc20: dai,
       idle: idleRiskAdjustedDai,
+      strategyId: STRATEGY_RISKADJUSTED,
     },
     {
-      name: "usdc",
       logo: usdcSrc,
       erc20: usdc,
       idle: idleRiskAdjustedUsdc,
+      strategyId: STRATEGY_RISKADJUSTED,
     },
     {
-      name: "usdt",
       logo: usdtSrc,
       erc20: usdt,
       idle: idleRiskAdjustedUsdt,
+      strategyId: STRATEGY_RISKADJUSTED,
     },
   ];
 

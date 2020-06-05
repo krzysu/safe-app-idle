@@ -9,3 +9,4 @@ to be continued
 - show different buttons only for possible actions
 - new screen with input to define balance to be deposited
 - idle svg logo for manifest
+- refactor state data structure for easier use

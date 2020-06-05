@@ -8,6 +8,9 @@ export const TOKEN_IDLE_RISKADJUSTED_DAI = "idleRiskAdjustedDai";
 export const TOKEN_IDLE_RISKADJUSTED_USDC = "idleRiskAdjustedUsdc";
 export const TOKEN_IDLE_RISKADJUSTED_USDT = "idleRiskAdjustedUsdt";
 
+export const STRATEGY_MAXYIELD = "maxYield";
+export const STRATEGY_RISKADJUSTED = "riskAdjusted";
+
 const buildErc20Data = ({ address, decimals }) => ({
   address,
   decimals,

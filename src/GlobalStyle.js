@@ -17,6 +17,11 @@ const GlobalStyle = createGlobalStyle`
         height: 100%;
     }
 
+    .MuiFormControl-root,
+    .MuiInputBase-root {
+        width: 100% !important;
+    }
+
     @font-face {
         font-family: 'Averta';
         src: local('Averta'), local('Averta Bold'),
