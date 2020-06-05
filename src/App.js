@@ -4,17 +4,20 @@ import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
-import { initAllTokens, parseUnits } from "./utils";
+import { initAllTokens } from "./utils";
 import { reducer, initialState, actions } from "./reducer";
 import Header from "./components/Header";
-import Table from "./components/Table";
+import Overview from "./components/Overview";
+import Withdraw from "./components/Withdraw";
+import Deposit from "./components/Deposit";
 
-import daiSrc from "./assets/dai.svg";
-import usdcSrc from "./assets/usdc.svg";
-import usdtSrc from "./assets/usdt.svg";
+const PAGE_OVERVIEW = "overview";
+const PAGE_DEPOSIT = "deposit";
+const PAGE_WITHDRAW = "withdraw";
 
 const App = () => {
   const [appsSdk] = useState(initSdk());
+  const [currentPage, setCurrentPage] = useState(PAGE_OVERVIEW);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -44,118 +47,32 @@ const App = () => {
     return <Loader size="md" />;
   }
 
-  const {
-    dai,
-    usdc,
-    usdt,
-    idleMaxYieldDai,
-    idleMaxYieldUsdc,
-    idleMaxYieldUsdt,
-    idleRiskAdjustedDai,
-    idleRiskAdjustedUsdc,
-    idleRiskAdjustedUsdt,
-  } = state.tokens;
-
-  const handleDeposit = (erc20, idle, amount) => () => {
-    const amountWei = parseUnits(amount, erc20.decimals);
-
-    // deposit 1 DAI for now
-    const txs = [
-      {
-        to: erc20.contract.address,
-        value: 0,
-        data: erc20.contract.interface.functions.approve.encode([
-          idle.contract.address,
-          amountWei,
-        ]),
-      },
-      {
-        to: idle.contract.address,
-        value: 0,
-        data: idle.contract.interface.functions.mintIdleToken.encode([
-          amountWei,
-          true,
-        ]),
-      },
-    ];
-
-    appsSdk.sendTransactions(txs);
+  const goToDeposit = () => {
+    setCurrentPage(PAGE_DEPOSIT);
   };
-
-  const handleWithdraw = (idle) => () => {
-    // withdraw everything for now
-    const txs = [
-      {
-        to: idle.contract.address,
-        value: 0,
-        data: idle.contract.interface.functions.redeemIdleToken.encode([
-          idle.balance,
-          true,
-          [],
-        ]),
-      },
-    ];
-
-    appsSdk.sendTransactions(txs);
+  const goToWithdraw = () => {
+    setCurrentPage(PAGE_WITHDRAW);
   };
-
-  const bestYieldTokens = [
-    {
-      name: "dai",
-      logo: daiSrc,
-      erc20: dai,
-      idle: idleMaxYieldDai,
-    },
-    {
-      name: "usdc",
-      logo: usdcSrc,
-      erc20: usdc,
-      idle: idleMaxYieldUsdc,
-    },
-    {
-      name: "usdt",
-      logo: usdtSrc,
-      erc20: usdt,
-      idle: idleMaxYieldUsdt,
-    },
-  ];
-
-  const riskAdjustedTokens = [
-    {
-      name: "dai",
-      logo: daiSrc,
-      erc20: dai,
-      idle: idleRiskAdjustedDai,
-    },
-    {
-      name: "usdc",
-      logo: usdcSrc,
-      erc20: usdc,
-      idle: idleRiskAdjustedUsdc,
-    },
-    {
-      name: "usdt",
-      logo: usdtSrc,
-      erc20: usdt,
-      idle: idleRiskAdjustedUsdt,
-    },
-  ];
+  const goToOverview = () => {
+    setCurrentPage(PAGE_OVERVIEW);
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <Header />
-      <Table
-        title="Best-Yield - Maximize your returns"
-        tokens={bestYieldTokens}
-        onDeposit={handleDeposit}
-        onWithdraw={handleWithdraw}
-      />
-      <Table
-        title="Risk-Adjusted - Optimize your risk exposure"
-        tokens={riskAdjustedTokens}
-        onDeposit={handleDeposit}
-        onWithdraw={handleWithdraw}
-      />
+      {currentPage === PAGE_OVERVIEW && (
+        <Overview
+          state={state}
+          onDepositClick={goToDeposit}
+          onWithdrawClick={goToWithdraw}
+        />
+      )}
+      {currentPage === PAGE_DEPOSIT && (
+        <Deposit state={state} onBackClick={goToOverview} />
+      )}
+      {currentPage === PAGE_WITHDRAW && (
+        <Withdraw state={state} onBackClick={goToOverview} />
+      )}
       <footer>
         <Text size="md">
           Disclaimer: The author of this app did his best to provide fully

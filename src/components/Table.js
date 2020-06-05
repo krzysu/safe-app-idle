@@ -12,9 +12,9 @@ import styles from "./Table.module.css";
 }
 */
 
-const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
+const Table = ({ title, tokens, onDepositClick, onWithdrawClick }) => {
   return (
-    <div className={styles.component}>
+    <React.Fragment>
       <Text size="xl" className={styles.title}>
         {title}
       </Text>
@@ -67,8 +67,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
                       size="md"
                       color="primary"
                       variant="contained"
-                      onClick={onDeposit(token.erc20, token.idle, "1")}
-                      disabled
+                      onClick={onDepositClick}
                     >
                       Deposit
                     </Button>
@@ -78,8 +77,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
                       size="md"
                       color="secondary"
                       variant="contained"
-                      onClick={onWithdraw(token.idle)}
-                      disabled
+                      onClick={onWithdrawClick}
                     >
                       Withdraw
                     </Button>
@@ -90,7 +88,7 @@ const Table = ({ title, tokens, onDeposit, onWithdraw }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </React.Fragment>
   );
 };
 
