@@ -83,7 +83,10 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                       size="md"
                       color="secondary"
                       variant="contained"
-                      onClick={onWithdrawClick}
+                      onClick={onWithdrawClick(
+                        token.erc20.name,
+                        token.strategyId
+                      )}
                     >
                       Withdraw
                     </Button>

@@ -5,19 +5,21 @@ import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
 import { initAllTokens } from "./utils";
-import { reducer, initialState, actions } from "./reducer";
+import {
+  reducer,
+  initialState,
+  actions,
+  PAGE_OVERVIEW,
+  PAGE_DEPOSIT,
+  PAGE_WITHDRAW,
+} from "./reducer";
 import Header from "./components/Header";
 import Overview from "./pages/Overview";
 import Withdraw from "./pages/Withdraw";
 import Deposit from "./pages/Deposit";
 
-const PAGE_OVERVIEW = "overview";
-const PAGE_DEPOSIT = "deposit";
-const PAGE_WITHDRAW = "withdraw";
-
 const App = () => {
   const [appsSdk] = useState(initSdk());
-  const [currentPage, setCurrentPage] = useState(PAGE_OVERVIEW);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -48,15 +50,18 @@ const App = () => {
   }
 
   const goToDeposit = (tokenId, strategyId) => () => {
-    console.log(tokenId, strategyId);
-    setCurrentPage(PAGE_DEPOSIT);
+    dispatch(actions.goToPage(PAGE_DEPOSIT, { tokenId, strategyId }));
   };
-  const goToWithdraw = () => {
-    setCurrentPage(PAGE_WITHDRAW);
+
+  const goToWithdraw = (tokenId, strategyId) => () => {
+    dispatch(actions.goToPage(PAGE_WITHDRAW, { tokenId, strategyId }));
   };
+
   const goToOverview = () => {
-    setCurrentPage(PAGE_OVERVIEW);
+    dispatch(actions.goToPage(PAGE_OVERVIEW));
   };
+
+  const { currentPage } = state;
 
   return (
     <ThemeProvider theme={theme}>

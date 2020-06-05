@@ -8,18 +8,13 @@ import {
 import TokenSelect from "../components/TokenSelect";
 import StrategySelect from "../components/StrategySelect";
 import { parseUnits, formatToken, formatAPR, getIdleTokenId } from "../utils";
-import { STRATEGY_MAXYIELD } from "../tokens";
 
 import styles from "./Deposit.module.css";
 
-const Deposit = ({
-  state,
-  defaultTokenId = "dai",
-  defaultStrategyId = STRATEGY_MAXYIELD,
-  onBackClick,
-}) => {
-  const [tokenId, setTokenId] = useState(defaultTokenId);
-  const [strategyId, setStrategyId] = useState(defaultStrategyId);
+const Deposit = ({ state, onBackClick }) => {
+  const [tokenId, setTokenId] = useState(state.currentTokenId);
+  const [strategyId, setStrategyId] = useState(state.currentStrategyId);
+  const [amount, setAmount] = useState("");
 
   const handleDeposit = (erc20, idle, amount) => () => {
     const amountWei = parseUnits(amount, erc20.decimals);
@@ -47,11 +42,15 @@ const Deposit = ({
     // appsSdk.sendTransactions(txs);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <React.Fragment>
       <Title size="xs">Deposit</Title>
 
-      <form onSubmit={() => {}} className={styles.form}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div>
           <label>
             <Text size="lg">Strategy</Text>
@@ -81,18 +80,39 @@ const Deposit = ({
             <Text size="lg">Balance: {formatToken(state.tokens[tokenId])}</Text>
           </label>
           <div>
-            <TextField label="Amount" defaultValue="" />
+            <TextField
+              label="Amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
             <div className={styles.split}>
-              <button className={styles.link}>
+              <button
+                className={styles.link}
+                type="button"
+                onClick={() => setAmount(25)}
+              >
                 <Text size="md">25%</Text>
               </button>
-              <button className={styles.link}>
+              <button
+                className={styles.link}
+                type="button"
+                onClick={() => setAmount(50)}
+              >
                 <Text size="md">50%</Text>
               </button>
-              <button className={styles.link}>
+              <button
+                className={styles.link}
+                type="button"
+                onClick={() => setAmount(75)}
+              >
                 <Text size="md">75%</Text>
               </button>
-              <button className={styles.link}>
+              <button
+                className={styles.link}
+                type="button"
+                onClick={() => setAmount(100)}
+              >
                 <Text size="md">MAX</Text>
               </button>
             </div>

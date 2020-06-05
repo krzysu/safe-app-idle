@@ -7,6 +7,10 @@ import {
   TOKEN_IDLE_RISKADJUSTED_USDC,
 } from "./tokens";
 
+export const PAGE_OVERVIEW = "overview";
+export const PAGE_DEPOSIT = "deposit";
+export const PAGE_WITHDRAW = "withdraw";
+
 export const initialState = {
   isLoaded: false,
   safeInfo: {
@@ -30,10 +34,14 @@ export const initialState = {
     [TOKEN_IDLE_RISKADJUSTED_USDC]: {},
     [TOKEN_IDLE_RISKADJUSTED_USDT]: {},
   },
+  currentPage: PAGE_OVERVIEW,
+  currentTokenId: "",
+  currentStrategyId: "",
 };
 
 const SET_SAFE_INFO = "SET_SAFE_INFO";
 const SET_TOKENS = "SET_TOKENS";
+const GO_TO_PAGE = "GO_TO_PAGE";
 
 export const actions = {
   setSafeInfo: (safeInfo) => ({
@@ -43,6 +51,10 @@ export const actions = {
   setTokens: (tokens) => ({
     type: SET_TOKENS,
     payload: tokens,
+  }),
+  goToPage: (page, data = {}) => ({
+    type: GO_TO_PAGE,
+    payload: { page, data },
   }),
 };
 
@@ -65,6 +77,14 @@ export const reducer = (state, action) => {
           ...action.payload,
         },
         isLoaded: true,
+      };
+
+    case GO_TO_PAGE:
+      return {
+        ...state,
+        currentPage: action.payload.page,
+        currentTokenId: action.payload.data.tokenId,
+        currentStrategyId: action.payload.data.strategyId,
       };
 
     default:
