@@ -8,7 +8,7 @@ import styles from "./StrategySelect.module.css";
 
 const StrategySelect = ({ onChange = () => {}, defaultValue = "maxYield" }) => {
   const items = [
-    { id: "maxYield", label: "Max-Yield", iconUrl: bestYieldSrc },
+    { id: "maxYield", label: "Best-Yield", iconUrl: bestYieldSrc },
     { id: "riskAdjusted", label: "Risk-Adjusted", iconUrl: riskAdjustedSrc },
   ];
 

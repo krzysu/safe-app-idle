@@ -5,6 +5,8 @@ import Table from "../components/Table";
 import daiSrc from "../assets/dai.svg";
 import usdcSrc from "../assets/usdc.svg";
 import usdtSrc from "../assets/usdt.svg";
+import bestYieldSrc from "../assets/best-on.svg";
+import riskAdjustedSrc from "../assets/risk-on.svg";
 
 import styles from "./Overview.module.css";
 
@@ -81,6 +83,7 @@ const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
       </div>
       <div className={styles.table}>
         <Table
+          iconSrc={bestYieldSrc}
           title="Best-Yield - Maximize your returns"
           tokens={bestYieldTokens}
           onDepositClick={onDepositClick}
@@ -89,6 +92,7 @@ const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
       </div>
       <div className={styles.table}>
         <Table
+          iconSrc={riskAdjustedSrc}
           title="Risk-Adjusted - Optimize your risk exposure"
           tokens={riskAdjustedTokens}
           onDepositClick={onDepositClick}

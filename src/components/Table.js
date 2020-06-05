@@ -12,12 +12,15 @@ import styles from "./Table.module.css";
 }
 */
 
-const Table = ({ title, tokens, onDepositClick, onWithdrawClick }) => {
+const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
   return (
     <React.Fragment>
-      <Text size="xl" className={styles.title}>
-        {title}
-      </Text>
+      <div className={styles.header}>
+        <img src={iconSrc} alt={title} className={styles.logo} />
+        <Text size="xl" className={styles.title}>
+          {title}
+        </Text>
+      </div>
       <table className={styles.table}>
         <thead>
           <tr>
