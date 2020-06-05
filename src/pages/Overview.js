@@ -1,6 +1,6 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
-import Table from "./Table";
+import Table from "../components/Table";
 
 import daiSrc from "../assets/dai.svg";
 import usdcSrc from "../assets/usdc.svg";

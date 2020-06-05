@@ -7,9 +7,9 @@ import initSdk from "@gnosis.pm/safe-apps-sdk";
 import { initAllTokens } from "./utils";
 import { reducer, initialState, actions } from "./reducer";
 import Header from "./components/Header";
-import Overview from "./components/Overview";
-import Withdraw from "./components/Withdraw";
-import Deposit from "./components/Deposit";
+import Overview from "./pages/Overview";
+import Withdraw from "./pages/Withdraw";
+import Deposit from "./pages/Deposit";
 
 const PAGE_OVERVIEW = "overview";
 const PAGE_DEPOSIT = "deposit";
