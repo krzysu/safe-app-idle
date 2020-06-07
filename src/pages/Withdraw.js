@@ -1,8 +1,14 @@
 import React from "react";
-import { Button, Text } from "@gnosis.pm/safe-react-components";
+import { Title } from "@gnosis.pm/safe-react-components";
+import Form, { FORM_WITHDRAW } from "../components/Form";
+import { getIdleTokenId } from "../utils";
 
-const Withdraw = ({ state, onBackClick }) => {
-  const handleWithdraw = (idle) => () => {
+const Withdraw = ({ state, appsSdk, onBackClick }) => {
+  const handleWithdraw = ({ tokenId, strategyId, amount }) => {
+    const idle = state.tokens[getIdleTokenId(tokenId, strategyId)];
+
+    // TODO calculate amount of idle tokens from amount of erc20 to redeem
+
     // withdraw everything for now
     const txs = [
       {
@@ -16,21 +22,19 @@ const Withdraw = ({ state, onBackClick }) => {
       },
     ];
 
-    // appsSdk.sendTransactions(txs);
+    appsSdk.sendTransactions(txs);
   };
 
   return (
     <React.Fragment>
-      <Text size="xl">Withdraw</Text>
+      <Title size="xs">Withdraw</Title>
 
-      <Button
-        size="md"
-        color="primary"
-        variant="contained"
-        onClick={onBackClick}
-      >
-        Back
-      </Button>
+      <Form
+        state={state}
+        onSubmit={handleWithdraw}
+        onBackClick={onBackClick}
+        formType={FORM_WITHDRAW}
+      />
     </React.Fragment>
   );
 };

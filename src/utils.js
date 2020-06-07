@@ -26,12 +26,15 @@ const TOKEN_IDS_MAPPING = {
 export const getIdleTokenId = (tokenId, strategyId) => {
   return TOKEN_IDS_MAPPING[strategyId][tokenId];
 };
-export const formatUnits = (balance = "0", decimals = 18) =>
-  ethers.utils.formatUnits(balance, decimals);
 
-export const formatToken = ({ balance, decimals, name }) => {
+export const formatToken = (
+  { balance, decimals, name },
+  { withSymbol = true, fixed = 4 } = {}
+) => {
   const balanceString = ethers.utils.formatUnits(balance, decimals);
-  return `${Number.parseFloat(balanceString).toFixed(4)} ${name.toUpperCase()}`;
+  return `${Number.parseFloat(balanceString).toFixed(fixed)} ${
+    withSymbol ? name.toUpperCase() : ""
+  }`;
 };
 
 export const formatAPR = (balance = "0") => {

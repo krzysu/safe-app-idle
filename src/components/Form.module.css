@@ -15,13 +15,16 @@
   }
 }
 
-.apr {
-  height: 56px;
+.assetLabel {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
 }
 
 .amount {
+  grid-column: 1/-1;
+}
+
+.amountLabel {
   display: flex;
   justify-content: flex-end;
 }

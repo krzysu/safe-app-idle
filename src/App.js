@@ -74,10 +74,10 @@ const App = () => {
         />
       )}
       {currentPage === PAGE_DEPOSIT && (
-        <Deposit state={state} onBackClick={goToOverview} />
+        <Deposit state={state} appsSdk={appsSdk} onBackClick={goToOverview} />
       )}
       {currentPage === PAGE_WITHDRAW && (
-        <Withdraw state={state} onBackClick={goToOverview} />
+        <Withdraw state={state} appsSdk={appsSdk} onBackClick={goToOverview} />
       )}
       <footer>
         <Text size="md">

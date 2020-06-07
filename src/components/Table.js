@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
-import { formatUnits, formatAPR } from "../utils";
+import { formatToken, formatAPR } from "../utils";
 
 import styles from "./Table.module.css";
 
@@ -52,12 +52,12 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
               </td>
               <td>
                 <Text size="lg">
-                  {formatUnits(token.erc20.balance, token.erc20.decimals)}
+                  {formatToken(token.erc20, { withSymbol: false, fixed: 2 })}
                 </Text>
               </td>
               <td>
                 <Text size="lg">
-                  {formatUnits(token.idle.balance, token.idle.decimals)}
+                  {formatToken(token.idle, { withSymbol: false, fixed: 2 })}
                 </Text>
               </td>
               <td>
