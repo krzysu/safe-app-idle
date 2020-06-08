@@ -1429,10 +1429,10 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
   integrity sha512-DetpxZw1fzPD5xUBrIAoplLChO2VB8DlL5Gg+I1IR9b2wPqYIca2WSUxL5g1vLeR4MsQq1NeWriXAVffV+U1Fw==
 
-"@studydefi/money-legos@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@studydefi/money-legos/-/money-legos-2.2.1.tgz#a9ec62180f83bd8f6f0af042d6ed3f9520836531"
-  integrity sha512-NXJPYdT9H7WvIYb3U2x4Yzdfm74Zb7oPZHaGf+zJM6fy+YDe4i/s5xvYj7oLPaNrTBUrmklB56vlQFEkMYBuiw==
+"@studydefi/money-legos@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@studydefi/money-legos/-/money-legos-2.3.2.tgz#f724e0577793f172703d601c45be219cfb02d506"
+  integrity sha512-TK9i6cBD/MPMGvytZeM6+b2+M1UmjSj0euaUXGS2fVSPYDmI7Bud2HrWKkfwGb/aFlEr19wvqU/iB4q4Kgd5Ow==
   dependencies:
     "@openzeppelin/contracts" "^2.5.0"
 
