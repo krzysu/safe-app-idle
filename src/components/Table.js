@@ -12,6 +12,8 @@ import styles from "./Table.module.css";
 }
 */
 
+const hasZeroBalance = (token) => token.balance.eq(0);
+
 const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
   return (
     <React.Fragment>
@@ -70,6 +72,7 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                       size="md"
                       color="primary"
                       variant="contained"
+                      disabled={hasZeroBalance(token.erc20)}
                       onClick={onDepositClick(
                         token.erc20.name,
                         token.strategyId
@@ -83,6 +86,7 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                       size="md"
                       color="secondary"
                       variant="contained"
+                      disabled={hasZeroBalance(token.idle)}
                       onClick={onWithdrawClick(
                         token.erc20.name,
                         token.strategyId

@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Text, TextField } from "@gnosis.pm/safe-react-components";
 import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
-import { formatToken, formatAPR, getIdleTokenId } from "../utils";
+import {
+  balanceToFloat,
+  formatToken,
+  formatAPR,
+  getIdleTokenId,
+} from "../utils";
 
 import styles from "./Form.module.css";
 
@@ -14,16 +19,24 @@ const buttonLabels = {
   [FORM_WITHDRAW]: "Withdraw",
 };
 
-const getFormTokenBalance = (state, formType, tokenId, strategyId) => {
+const getFormToken = (state, formType, tokenId, strategyId) => {
   if (formType === FORM_DEPOSIT) {
-    return `Balance: ${formatToken(state.tokens[tokenId])}`;
+    return state.tokens[tokenId];
+  }
+  if (formType === FORM_WITHDRAW) {
+    return state.tokens[getIdleTokenId(tokenId, strategyId)];
+  }
+};
+
+const getFormTokenBalance = (formToken, formType, tokenId) => {
+  if (formType === FORM_DEPOSIT) {
+    return `Balance: ${formatToken(formToken)}`;
   }
 
   if (formType === FORM_WITHDRAW) {
-    return `Deposit balance: ${formatToken(
-      state.tokens[getIdleTokenId(tokenId, strategyId)],
-      { withSymbol: false }
-    )} ${tokenId.toUpperCase()}`;
+    return `Deposit balance: ${formatToken(formToken, {
+      withSymbol: false,
+    })} ${tokenId.toUpperCase()}`;
   }
 };
 
@@ -31,6 +44,28 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
   const [amount, setAmount] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [idleToken, setIdleToken] = useState(
+    state.tokens[getIdleTokenId(tokenId, strategyId)]
+  );
+  const [formToken, setFormToken] = useState(
+    getFormToken(state, formType, tokenId, strategyId)
+  );
+
+  useEffect(() => {
+    setFormToken(getFormToken(state, formType, tokenId, strategyId));
+    setIdleToken(state.tokens[getIdleTokenId(tokenId, strategyId)]);
+  }, [formType, tokenId, strategyId]);
+
+  useEffect(() => {
+    const maxAmount = balanceToFloat(formToken);
+
+    if (amount !== "" && amount <= maxAmount && amount > 0) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+    }
+  }, [amount, formToken]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,18 +83,14 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
       <div>
         <label className={styles.assetLabel}>
           <Text size="lg">Asset</Text>
-          <Text size="lg">
-            {`APR: ${formatAPR(
-              state.tokens[getIdleTokenId(tokenId, strategyId)].avgAPR
-            )}`}
-          </Text>
+          <Text size="lg">{`APR: ${formatAPR(idleToken.avgAPR)}`}</Text>
         </label>
         <TokenSelect value={tokenId} onChange={setTokenId} />
       </div>
       <div className={styles.amount}>
         <label className={styles.amountLabel}>
           <Text size="lg">
-            {getFormTokenBalance(state, formType, tokenId, strategyId)}
+            {getFormTokenBalance(formToken, formType, tokenId)}
           </Text>
         </label>
         <div>
@@ -73,28 +104,36 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(25)}
+              onClick={() =>
+                setAmount(balanceToFloat(formToken, { divideBy: 4 }))
+              }
             >
               <Text size="md">25%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(50)}
+              onClick={() =>
+                setAmount(balanceToFloat(formToken, { divideBy: 2 }))
+              }
             >
               <Text size="md">50%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(75)}
+              onClick={() =>
+                setAmount(
+                  balanceToFloat(formToken, { divideBy: 4, multiBy: 3 })
+                )
+              }
             >
               <Text size="md">75%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(100)}
+              onClick={() => setAmount(balanceToFloat(formToken))}
             >
               <Text size="md">MAX</Text>
             </button>
@@ -108,7 +147,7 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
         variant="contained"
         type="submit"
         className={styles.button}
-        disabled
+        disabled={!isValid}
       >
         {buttonLabels[formType]}
       </Button>

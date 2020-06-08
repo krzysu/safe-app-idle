@@ -37,6 +37,15 @@ export const formatToken = (
   }`;
 };
 
+export const balanceToFloat = (
+  { balance, decimals },
+  { divideBy = 1, multiBy = 1 } = {}
+) => {
+  const newBalance = balance.div(divideBy).mul(multiBy);
+  const balanceString = ethers.utils.formatUnits(newBalance, decimals);
+  return Number.parseFloat(balanceString);
+};
+
 export const formatAPR = (balance = "0") => {
   const aprString = ethers.utils.formatUnits(balance, 18);
   return `${Number.parseFloat(aprString).toFixed(2)}%`;
