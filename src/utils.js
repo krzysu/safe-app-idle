@@ -72,13 +72,15 @@ const initErc20Token = async (provider, network, safeAddress, tokenName) => {
 const initIdleToken = async (provider, network, safeAddress, tokenName) => {
   const token = tokens[network] && tokens[network][tokenName];
   const contract = new ethers.Contract(token.address, tokens.idleAbi, provider);
-  const balance = await contract.balanceOf(safeAddress);
+  const balanceIdle = await contract.balanceOf(safeAddress);
   const avgAPR = await contract.getAvgAPR();
+  const tokenPrice = await contract.tokenPrice();
 
   return {
     name: tokenName,
     contract,
-    balance,
+    balance: balanceIdle.mul(tokenPrice),
+    balanceIdle,
     avgAPR,
     decimals: token.decimals,
   };

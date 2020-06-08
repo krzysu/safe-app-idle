@@ -51,7 +51,7 @@ const rinkeby = {
   },
   // all of them using the same mocked contract
   [TOKEN_IDLE_MAXYIELD_DAI]: buildIdleData({
-    address: "0x7e275981Fc00aD9B906cce19C8186054B1Cfda93",
+    address: "0x373fe868d88BdCD41628e2ef5e3FdFa2F9359b60",
   }),
   [TOKEN_IDLE_MAXYIELD_USDC]: buildIdleData({
     address: "0x7e275981Fc00aD9B906cce19C8186054B1Cfda93",
