@@ -120,7 +120,7 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
         className={styles.button}
         onClick={onBackClick}
       >
-        Cancel and go back
+        Cancel
       </Button>
     </form>
   );
