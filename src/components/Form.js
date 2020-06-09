@@ -24,7 +24,7 @@ const getFormToken = (state, formType, tokenId, strategyId) => {
     return state.tokens[tokenId];
   }
   if (formType === FORM_WITHDRAW) {
-    return state.tokens[getIdleTokenId(tokenId, strategyId)];
+    return state.tokens[getIdleTokenId(strategyId, tokenId)];
   }
 };
 
@@ -41,12 +41,14 @@ const getFormTokenBalance = (formToken, formType, tokenId) => {
 };
 
 const Form = ({ state, onSubmit, onBackClick, formType }) => {
+  // TODO refactor
+
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
   const [amount, setAmount] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [idleToken, setIdleToken] = useState(
-    state.tokens[getIdleTokenId(tokenId, strategyId)]
+    state.tokens[getIdleTokenId(strategyId, tokenId)]
   );
   const [formToken, setFormToken] = useState(
     getFormToken(state, formType, tokenId, strategyId)
@@ -54,7 +56,7 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
 
   useEffect(() => {
     setFormToken(getFormToken(state, formType, tokenId, strategyId));
-    setIdleToken(state.tokens[getIdleTokenId(tokenId, strategyId)]);
+    setIdleToken(state.tokens[getIdleTokenId(strategyId, tokenId)]);
   }, [formType, tokenId, strategyId]);
 
   useEffect(() => {

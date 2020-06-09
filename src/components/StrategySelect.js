@@ -1,6 +1,6 @@
 import React from "react";
 import { Select } from "@gnosis.pm/safe-react-components";
-import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../tokens";
+import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../const";
 
 import bestYieldSrc from "../assets/best-on.svg";
 import riskAdjustedSrc from "../assets/risk-on.svg";

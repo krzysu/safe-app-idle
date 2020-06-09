@@ -6,7 +6,7 @@ import { getIdleTokenId, parseUnits } from "../utils";
 const Deposit = ({ state, appsSdk, onBackClick }) => {
   const handleDeposit = ({ tokenId, strategyId, amount }) => {
     const erc20 = state.tokens[tokenId];
-    const idle = state.tokens[getIdleTokenId(tokenId, strategyId)];
+    const idle = state.tokens[getIdleTokenId(strategyId, tokenId)];
     const amountWei = parseUnits(amount.toString(), erc20.decimals);
 
     const txs = [

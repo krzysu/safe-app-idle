@@ -4,19 +4,14 @@ import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
-import { initAllTokens } from "./utils";
-import {
-  reducer,
-  initialState,
-  actions,
-  PAGE_OVERVIEW,
-  PAGE_DEPOSIT,
-  PAGE_WITHDRAW,
-} from "./reducer";
 import Header from "./components/Header";
 import Overview from "./pages/Overview";
 import Withdraw from "./pages/Withdraw";
 import Deposit from "./pages/Deposit";
+
+import { initAllTokens } from "./contracts";
+import { reducer, initialState, actions } from "./reducer";
+import { PAGE_OVERVIEW, PAGE_DEPOSIT, PAGE_WITHDRAW } from "./const";
 
 const App = () => {
   const [appsSdk] = useState(initSdk());

@@ -1,15 +1,32 @@
 import React from "react";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
-import { formatToken, formatAPR, balanceToFloat } from "../utils";
+import { formatToken, formatAPR, formatDepositBalance } from "../utils";
 
 import styles from "./Table.module.css";
 
-/* const tokens = {
-    logo: usdtSrc,
-    erc20: usdt,
-    idle: idleMaxYieldUsdt,
-    strategyId
-}
+/* 
+  const token = {
+    address: "",
+    decimals: "",
+    logo: "",
+    strategyId: "",
+    tokenId: "",
+
+    tokenPrice: "",
+    avgAPR: "",
+    underlying: {
+      symbol: "",
+      contract: "",
+      balance: "",
+      decimals: "",
+    },
+    idle: {
+      symbol: "",
+      contract: "",
+      balance: "",
+      decimals: "",
+    },
+  }
 */
 
 const hasZeroBalance = (token) => token.balance.eq(0);
@@ -41,38 +58,30 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
         </thead>
         <tbody>
           {tokens.map((token) => (
-            <tr key={token.erc20.name}>
+            <tr key={token.tokenId}>
               <td className={styles.tokenNameCol}>
                 <div className={styles.tokenName}>
                   <img
                     src={token.logo}
-                    alt={token.erc20.name}
+                    alt={token.underlying.symbol}
                     className={styles.logo}
                   />
-                  <Text size="lg">{token.erc20.name.toUpperCase()}</Text>
+                  <Text size="lg">{token.underlying.symbol}</Text>
                 </div>
               </td>
               <td>
                 <Text size="lg">
-                  {formatToken(token.erc20, { withSymbol: false, fixed: 2 })}
+                  {formatToken(token.underlying, {
+                    withSymbol: false,
+                    fixed: 2,
+                  })}
                 </Text>
               </td>
               <td>
-                <Text size="lg">
-                  {
-                    // multiply idle token balance with token price
-                    Number.parseFloat(
-                      balanceToFloat(token.idle) *
-                        balanceToFloat({
-                          balance: token.idle.tokenPrice,
-                          decimals: token.erc20.decimals,
-                        })
-                    ).toFixed(2)
-                  }
-                </Text>
+                <Text size="lg">{formatDepositBalance(token)}</Text>
               </td>
               <td>
-                <Text size="lg">{formatAPR(token.idle.avgAPR)}</Text>
+                <Text size="lg">{formatAPR(token.avgAPR)}</Text>
               </td>
               <td>
                 <div className={styles.buttons}>
@@ -81,11 +90,8 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                       size="md"
                       color="primary"
                       variant="contained"
-                      disabled={hasZeroBalance(token.erc20)}
-                      onClick={onDepositClick(
-                        token.erc20.name,
-                        token.strategyId
-                      )}
+                      disabled={hasZeroBalance(token.underlying)}
+                      onClick={onDepositClick(token.tokenId, token.strategyId)}
                     >
                       Deposit
                     </Button>
@@ -96,10 +102,7 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                       color="secondary"
                       variant="contained"
                       disabled={hasZeroBalance(token.idle)}
-                      onClick={onWithdrawClick(
-                        token.erc20.name,
-                        token.strategyId
-                      )}
+                      onClick={onWithdrawClick(token.tokenId, token.strategyId)}
                     >
                       Withdraw
                     </Button>

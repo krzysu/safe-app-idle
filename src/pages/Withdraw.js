@@ -7,7 +7,7 @@ const Withdraw = ({ state, appsSdk, onBackClick }) => {
   const handleWithdraw = ({ tokenId, strategyId, amount }) => {
     const withdraw = async () => {
       const erc20 = state.tokens[tokenId];
-      const idle = state.tokens[getIdleTokenId(tokenId, strategyId)];
+      const idle = state.tokens[getIdleTokenId(strategyId, tokenId)];
       // const amountWei = parseUnits(amount.toString(), erc20.decimals);
 
       // get latest price

@@ -1,15 +1,4 @@
-import {
-  TOKEN_IDLE_MAXYIELD_DAI,
-  TOKEN_IDLE_MAXYIELD_USDC,
-  TOKEN_IDLE_MAXYIELD_USDT,
-  TOKEN_IDLE_RISKADJUSTED_USDT,
-  TOKEN_IDLE_RISKADJUSTED_DAI,
-  TOKEN_IDLE_RISKADJUSTED_USDC,
-} from "./tokens";
-
-export const PAGE_OVERVIEW = "overview";
-export const PAGE_DEPOSIT = "deposit";
-export const PAGE_WITHDRAW = "withdraw";
+import { PAGE_OVERVIEW } from "./const";
 
 export const initialState = {
   isLoaded: false,
@@ -19,20 +8,30 @@ export const initialState = {
     ethBalance: "0",
   },
   tokens: {
-    dai: {
-      name: "dai",
-      contract: null,
-      balance: "0",
-      decimals: 0,
+    exampleToken: {
+      // set in tokens.js
+      address: "",
+      decimals: "",
+      logo: "",
+      strategyId: "",
+      tokenId: "",
+
+      // set in contracts.js
+      tokenPrice: "",
+      avgAPR: "",
+      underlying: {
+        symbol: "",
+        contract: "",
+        balance: "",
+        decimals: "",
+      },
+      idle: {
+        symbol: "",
+        contract: "",
+        balance: "",
+        decimals: "",
+      },
     },
-    usdc: {},
-    usdt: {},
-    [TOKEN_IDLE_MAXYIELD_DAI]: {},
-    [TOKEN_IDLE_MAXYIELD_USDC]: {},
-    [TOKEN_IDLE_MAXYIELD_USDT]: {},
-    [TOKEN_IDLE_RISKADJUSTED_DAI]: {},
-    [TOKEN_IDLE_RISKADJUSTED_USDC]: {},
-    [TOKEN_IDLE_RISKADJUSTED_USDT]: {},
   },
   currentPage: PAGE_OVERVIEW,
   currentTokenId: "",
@@ -48,10 +47,12 @@ export const actions = {
     type: SET_SAFE_INFO,
     payload: safeInfo,
   }),
+
   setTokens: (tokens) => ({
     type: SET_TOKENS,
     payload: tokens,
   }),
+
   goToPage: (page, data = {}) => ({
     type: GO_TO_PAGE,
     payload: { page, data },
@@ -72,10 +73,7 @@ export const reducer = (state, action) => {
     case SET_TOKENS:
       return {
         ...state,
-        tokens: {
-          ...state.tokens,
-          ...action.payload,
-        },
+        tokens: action.payload,
         isLoaded: true,
       };
 
