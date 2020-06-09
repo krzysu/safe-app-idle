@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
-import { formatToken, formatAPR } from "../utils";
+import { formatToken, formatAPR, balanceToFloat } from "../utils";
 
 import styles from "./Table.module.css";
 
@@ -59,7 +59,16 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
               </td>
               <td>
                 <Text size="lg">
-                  {formatToken(token.idle, { withSymbol: false, fixed: 2 })}
+                  {
+                    // multiply idle token balance with token price
+                    Number.parseFloat(
+                      balanceToFloat(token.idle) *
+                        balanceToFloat({
+                          balance: token.idle.tokenPrice,
+                          decimals: token.erc20.decimals,
+                        })
+                    ).toFixed(2)
+                  }
                 </Text>
               </td>
               <td>

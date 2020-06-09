@@ -46,27 +46,27 @@ const rinkeby = {
     decimals: 6,
   },
   usdt: {
-    address: "0xD9BA894E0097f8cC2BBc9D24D308b98e36dc6D02",
+    address: "0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8",
     decimals: 18,
   },
   // I deployed a few Idle mocked contracts on rinkeby
   [TOKEN_IDLE_MAXYIELD_DAI]: buildIdleData({
-    address: "0xE7e4bd8953D4a7Ea3824B09ABff5ECB448Ad660C",
+    address: "0xb20567b77AF55Cd4462941Eb9c9F2bFd734dF84f",
   }),
   [TOKEN_IDLE_MAXYIELD_USDC]: buildIdleData({
-    address: "0x4746546c65cF506BdA680A19e8F902d1e78e80c1",
+    address: "0x7C5E9E8f8Cedba477Efd1eA461aB2e54684C9897",
   }),
   [TOKEN_IDLE_MAXYIELD_USDT]: buildIdleData({
-    address: "0x7e275981Fc00aD9B906cce19C8186054B1Cfda93",
+    address: "0x728d6b9940F74B23CAa86a6afA7ea05Cc9d8A51F",
   }),
   [TOKEN_IDLE_RISKADJUSTED_DAI]: buildIdleData({
-    address: "0x373fe868d88BdCD41628e2ef5e3FdFa2F9359b60",
+    address: "0xb20567b77AF55Cd4462941Eb9c9F2bFd734dF84f",
   }),
   [TOKEN_IDLE_RISKADJUSTED_USDC]: buildIdleData({
-    address: "0x7e275981Fc00aD9B906cce19C8186054B1Cfda93",
+    address: "0x7C5E9E8f8Cedba477Efd1eA461aB2e54684C9897",
   }),
   [TOKEN_IDLE_RISKADJUSTED_USDT]: buildIdleData({
-    address: "0x7e275981Fc00aD9B906cce19C8186054B1Cfda93",
+    address: "0x728d6b9940F74B23CAa86a6afA7ea05Cc9d8A51F",
   }),
 };
 
