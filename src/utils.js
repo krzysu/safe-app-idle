@@ -3,14 +3,9 @@ import { ethers } from "ethers";
 export const getIdleTokenId = (strategyId, tokenId) =>
   `${strategyId}_${tokenId}`;
 
-export const formatToken = (
-  { balance, decimals, symbol },
-  { withSymbol = true, fixed = 4 } = {}
-) => {
+export const formatToken = ({ balance, decimals }, { precision = 8 } = {}) => {
   const balanceString = ethers.utils.formatUnits(balance, decimals);
-  return `${Number.parseFloat(balanceString).toFixed(fixed)} ${
-    withSymbol ? symbol : ""
-  }`;
+  return Number.parseFloat(balanceString).toFixed(precision);
 };
 
 export const balanceToFloat = (
@@ -37,8 +32,8 @@ const tokenPriceToFloat = (token) =>
   });
 
 // multiply idle token balance with token price
-const depositBalanceToFloat = (token) =>
+export const depositBalanceToFloat = (token) =>
   balanceToFloat(token.idle) * tokenPriceToFloat(token);
 
-export const formatDepositBalance = (token) =>
-  Number.parseFloat(depositBalanceToFloat(token)).toFixed(2);
+export const formatDepositBalance = (token, { precision = 8 } = {}) =>
+  Number.parseFloat(depositBalanceToFloat(token)).toFixed(precision);

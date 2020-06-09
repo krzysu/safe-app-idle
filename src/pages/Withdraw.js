@@ -20,7 +20,7 @@ const Withdraw = ({ state, appsSdk, onBackClick }) => {
       //   : idleTokenAmount;
 
       console.log({
-        max: formatToken({ ...idle, balance: idle.balance }, { fixed: 18 }),
+        max: formatToken({ ...idle, balance: idle.balance }, { precision: 18 }),
       });
 
       // withdraw everything for now

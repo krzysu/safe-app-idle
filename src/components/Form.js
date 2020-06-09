@@ -3,10 +3,11 @@ import { Button, Text, TextField } from "@gnosis.pm/safe-react-components";
 import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
 import {
+  getIdleTokenId,
   balanceToFloat,
   formatToken,
   formatAPR,
-  getIdleTokenId,
+  formatDepositBalance,
 } from "../utils";
 
 import styles from "./Form.module.css";
@@ -19,55 +20,41 @@ const buttonLabels = {
   [FORM_WITHDRAW]: "Withdraw",
 };
 
-const getFormToken = (state, formType, tokenId, strategyId) => {
+const getFormTokenBalance = (formToken, formType) => {
   if (formType === FORM_DEPOSIT) {
-    return state.tokens[tokenId];
-  }
-  if (formType === FORM_WITHDRAW) {
-    return state.tokens[getIdleTokenId(strategyId, tokenId)];
-  }
-};
-
-const getFormTokenBalance = (formToken, formType, tokenId) => {
-  if (formType === FORM_DEPOSIT) {
-    return `Balance: ${formatToken(formToken)}`;
+    return `Balance: ${formatToken(formToken.underlying)}`;
   }
 
   if (formType === FORM_WITHDRAW) {
-    return `Deposit balance: ${formatToken(formToken, {
-      withSymbol: false,
-    })} ${tokenId.toUpperCase()}`;
+    return `Deposit balance: ${formatDepositBalance(formToken)}`;
   }
 };
 
 const Form = ({ state, onSubmit, onBackClick, formType }) => {
-  // TODO refactor
-
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
   const [amount, setAmount] = useState("");
   const [isValid, setIsValid] = useState(false);
-  const [idleToken, setIdleToken] = useState(
+
+  const [formToken, setFormToken] = useState(
     state.tokens[getIdleTokenId(strategyId, tokenId)]
   );
-  const [formToken, setFormToken] = useState(
-    getFormToken(state, formType, tokenId, strategyId)
-  );
 
   useEffect(() => {
-    setFormToken(getFormToken(state, formType, tokenId, strategyId));
-    setIdleToken(state.tokens[getIdleTokenId(strategyId, tokenId)]);
-  }, [formType, tokenId, strategyId]);
+    setFormToken(state.tokens[getIdleTokenId(strategyId, tokenId)]);
+  }, [tokenId, strategyId]);
 
-  useEffect(() => {
-    const maxAmount = balanceToFloat(formToken);
+  // TODO figure out how to set amount in underlying for deposit and depositBalance for withdraw
 
-    if (amount !== "" && amount <= maxAmount && amount > 0) {
-      setIsValid(true);
-    } else {
-      setIsValid(false);
-    }
-  }, [amount, formToken]);
+  // useEffect(() => {
+  //   const maxAmount = balanceToFloat(formToken.underlying);
+
+  //   if (amount !== "" && amount <= maxAmount && amount > 0) {
+  //     setIsValid(true);
+  //   } else {
+  //     setIsValid(false);
+  //   }
+  // }, [amount, formToken]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -85,7 +72,7 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
       <div>
         <label className={styles.assetLabel}>
           <Text size="lg">Asset</Text>
-          <Text size="lg">{`APR: ${formatAPR(idleToken.avgAPR)}`}</Text>
+          <Text size="lg">{`APR: ${formatAPR(formToken.avgAPR)}`}</Text>
         </label>
         <TokenSelect value={tokenId} onChange={setTokenId} />
       </div>
