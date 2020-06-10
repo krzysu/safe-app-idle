@@ -11,6 +11,7 @@ import {
   formatDepositBalance,
   parseUnits,
   tokenPriceToFloat,
+  toFixedSpecial,
 } from "../utils";
 
 import styles from "./Form.module.css";
@@ -45,7 +46,10 @@ const calculateMaxAmount = (formType, formToken) => {
 
 const calculateRealAmountWei = (formType, formToken, amount) => {
   if (formType === FORM_DEPOSIT) {
-    return parseUnits(amount.toString(), formToken.underlying.decimals);
+    return parseUnits(
+      amount.toFixed(formToken.underlying.decimals),
+      formToken.underlying.decimals
+    );
   }
 
   if (formType === FORM_WITHDRAW) {
@@ -54,7 +58,10 @@ const calculateRealAmountWei = (formType, formToken, amount) => {
       amount / tokenPriceToFloat(formToken),
       formToken.idle.decimals
     );
-    return parseUnits(idleBalanceFloat.toString(), formToken.idle.decimals);
+    return parseUnits(
+      idleBalanceFloat.toFixed(formToken.idle.decimals),
+      formToken.idle.decimals
+    );
   }
 };
 
@@ -140,7 +147,7 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
           <TextField
             label="Amount"
             type="number"
-            value={amount}
+            value={toFixedSpecial(amount)}
             onChange={(e) => {
               if (e.target.value !== "") {
                 setAmount(
