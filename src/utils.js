@@ -21,7 +21,7 @@ export const formatAPR = (balance = "0") => {
 export const parseUnits = (valueString, decimals) =>
   ethers.utils.parseUnits(valueString, decimals);
 
-const tokenPriceToFloat = (token) =>
+export const tokenPriceToFloat = (token) =>
   balanceToFloat({
     balance: token.tokenPrice,
     decimals: token.underlying.decimals,

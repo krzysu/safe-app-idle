@@ -10,6 +10,7 @@ import {
   formatAPR,
   formatDepositBalance,
   parseUnits,
+  tokenPriceToFloat,
 } from "../utils";
 
 import styles from "./Form.module.css";
@@ -48,9 +49,12 @@ const calculateRealAmountWei = (formType, formToken, amount) => {
   }
 
   if (formType === FORM_WITHDRAW) {
-    // return idle balance in wei
-    // divide amount by price
-    return "";
+    // divide amount by tokenPrice
+    const idleBalanceFloat = roundToDecimals(
+      amount / tokenPriceToFloat(formToken),
+      formToken.idle.decimals
+    );
+    return parseUnits(idleBalanceFloat.toString(), formToken.idle.decimals);
   }
 };
 
@@ -110,8 +114,6 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
     e.preventDefault();
     onSubmit({ tokenId, strategyId, amountWei: realAmountWei });
   };
-
-  console.log("render", { realAmountWei, amount });
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>

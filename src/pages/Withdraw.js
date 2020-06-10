@@ -10,8 +10,11 @@ const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
     console.log("WITHDRAW", {
       tokenId,
       strategyId,
-      amountWei: formatToken({ balance: amountWei, decimals: idle.decimals }),
-      idleBalance: formatToken(idle),
+      amountWei: formatToken(
+        { balance: amountWei, decimals: idle.decimals },
+        { precision: 18 }
+      ),
+      amountMax: formatToken(idle, { precision: 18 }),
     });
 
     const txs = [
@@ -19,7 +22,7 @@ const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
         to: idle.contract.address,
         value: 0,
         data: idle.contract.interface.functions.redeemIdleToken.encode([
-          idle.balance, // TODO replace to amountWei
+          amountWei,
           true,
           [],
         ]),
