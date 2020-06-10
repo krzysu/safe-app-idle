@@ -1,26 +1,24 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useCallback, useReducer } from "react";
 import { ThemeProvider } from "styled-components";
 import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
-import { initAllTokens } from "./utils";
-import {
-  reducer,
-  initialState,
-  actions,
-  PAGE_OVERVIEW,
-  PAGE_DEPOSIT,
-  PAGE_WITHDRAW,
-} from "./reducer";
 import Header from "./components/Header";
 import Overview from "./pages/Overview";
 import Withdraw from "./pages/Withdraw";
 import Deposit from "./pages/Deposit";
 
+import { PAGE_OVERVIEW, PAGE_DEPOSIT, PAGE_WITHDRAW } from "./const";
+import { initAllTokens } from "./contracts";
+import { reducer, initialState, actions } from "./reducer";
+import { getIdleTokenId } from "./utils";
+
 const App = () => {
   const [appsSdk] = useState(initSdk());
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { safeInfo, currentPage, isLoaded, tokens } = state;
 
   useEffect(() => {
     appsSdk.addListeners({
@@ -33,35 +31,49 @@ const App = () => {
   }, [appsSdk]);
 
   useEffect(() => {
-    const { network, safeAddress } = state.safeInfo;
+    const { network, safeAddress } = safeInfo;
 
     const initTokens = async () => {
-      const tokens = await initAllTokens(network, safeAddress);
-      dispatch(actions.setTokens(tokens));
+      const allTokens = await initAllTokens(network, safeAddress);
+      dispatch(actions.setTokens(allTokens));
     };
 
     if (safeAddress !== "") {
       initTokens();
     }
-  }, [state.safeInfo]);
+  }, [safeInfo]);
 
-  if (!state.isLoaded) {
+  const updateTokenPrice = useCallback(
+    async (strategyId, tokenId) => {
+      const token = tokens[getIdleTokenId(strategyId, tokenId)];
+      const tokenPrice = await token.idle.contract.tokenPrice();
+
+      dispatch(actions.updateTokenPrice(strategyId, tokenId, tokenPrice));
+    },
+    [tokens]
+  );
+
+  const goToDeposit = useCallback(
+    (tokenId, strategyId) => () => {
+      dispatch(actions.goToPage(PAGE_DEPOSIT, { tokenId, strategyId }));
+    },
+    []
+  );
+
+  const goToWithdraw = useCallback(
+    (tokenId, strategyId) => () => {
+      dispatch(actions.goToPage(PAGE_WITHDRAW, { tokenId, strategyId }));
+    },
+    []
+  );
+
+  const goToOverview = useCallback(() => {
+    dispatch(actions.goToPage(PAGE_OVERVIEW));
+  }, []);
+
+  if (!isLoaded) {
     return <Loader size="md" />;
   }
-
-  const goToDeposit = (tokenId, strategyId) => () => {
-    dispatch(actions.goToPage(PAGE_DEPOSIT, { tokenId, strategyId }));
-  };
-
-  const goToWithdraw = (tokenId, strategyId) => () => {
-    dispatch(actions.goToPage(PAGE_WITHDRAW, { tokenId, strategyId }));
-  };
-
-  const goToOverview = () => {
-    dispatch(actions.goToPage(PAGE_OVERVIEW));
-  };
-
-  const { currentPage } = state;
 
   return (
     <ThemeProvider theme={theme}>
@@ -77,7 +89,12 @@ const App = () => {
         <Deposit state={state} appsSdk={appsSdk} onBackClick={goToOverview} />
       )}
       {currentPage === PAGE_WITHDRAW && (
-        <Withdraw state={state} appsSdk={appsSdk} onBackClick={goToOverview} />
+        <Withdraw
+          state={state}
+          appsSdk={appsSdk}
+          onBackClick={goToOverview}
+          updateTokenPrice={updateTokenPrice}
+        />
       )}
       <footer>
         <Text size="md">

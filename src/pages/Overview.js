@@ -1,70 +1,31 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Table from "../components/Table";
-import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../tokens";
+import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../const";
 
-import daiSrc from "../assets/dai.svg";
-import usdcSrc from "../assets/usdc.svg";
-import usdtSrc from "../assets/usdt.svg";
-import bestYieldSrc from "../assets/best-on.svg";
+import maxYieldSrc from "../assets/best-on.svg";
 import riskAdjustedSrc from "../assets/risk-on.svg";
 
 import styles from "./Overview.module.css";
 
+const findAllByStrategy = (tokenArray, strategyId) => {
+  return tokenArray.filter((token) => token.strategyId === strategyId);
+};
+
 const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
-  const {
-    dai,
-    usdc,
-    usdt,
-    idleMaxYieldDai,
-    idleMaxYieldUsdc,
-    idleMaxYieldUsdt,
-    idleRiskAdjustedDai,
-    idleRiskAdjustedUsdc,
-    idleRiskAdjustedUsdt,
-  } = state.tokens;
-
-  const bestYieldTokens = [
-    {
-      logo: daiSrc,
-      erc20: dai,
-      idle: idleMaxYieldDai,
-      strategyId: STRATEGY_MAXYIELD,
-    },
-    {
-      logo: usdcSrc,
-      erc20: usdc,
-      idle: idleMaxYieldUsdc,
-      strategyId: STRATEGY_MAXYIELD,
-    },
-    {
-      logo: usdtSrc,
-      erc20: usdt,
-      idle: idleMaxYieldUsdt,
-      strategyId: STRATEGY_MAXYIELD,
-    },
-  ];
-
-  const riskAdjustedTokens = [
-    {
-      logo: daiSrc,
-      erc20: dai,
-      idle: idleRiskAdjustedDai,
-      strategyId: STRATEGY_RISKADJUSTED,
-    },
-    {
-      logo: usdcSrc,
-      erc20: usdc,
-      idle: idleRiskAdjustedUsdc,
-      strategyId: STRATEGY_RISKADJUSTED,
-    },
-    {
-      logo: usdtSrc,
-      erc20: usdt,
-      idle: idleRiskAdjustedUsdt,
-      strategyId: STRATEGY_RISKADJUSTED,
-    },
-  ];
+  const { tokens } = state;
+  const tokenArray = useMemo(
+    () => Object.keys(tokens).map((key) => tokens[key]),
+    [tokens]
+  );
+  const maxYieldTokens = useMemo(
+    () => findAllByStrategy(tokenArray, STRATEGY_MAXYIELD),
+    [tokenArray]
+  );
+  const riskAdjustedTokens = useMemo(
+    () => findAllByStrategy(tokenArray, STRATEGY_RISKADJUSTED),
+    [tokenArray]
+  );
 
   return (
     <React.Fragment>
@@ -84,9 +45,9 @@ const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
       </div>
       <div className={styles.table}>
         <Table
-          iconSrc={bestYieldSrc}
+          iconSrc={maxYieldSrc}
           title="Best-Yield - Maximize your returns"
-          tokens={bestYieldTokens}
+          tokens={maxYieldTokens}
           onDepositClick={onDepositClick}
           onWithdrawClick={onWithdrawClick}
         />

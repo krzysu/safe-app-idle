@@ -1,45 +1,35 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Form, { FORM_WITHDRAW } from "../components/Form";
-import { getIdleTokenId, parseUnits, formatToken } from "../utils";
+import { getIdleTokenId, formatToken } from "../utils";
 
-const Withdraw = ({ state, appsSdk, onBackClick }) => {
-  const handleWithdraw = ({ tokenId, strategyId, amount }) => {
-    const withdraw = async () => {
-      const erc20 = state.tokens[tokenId];
-      const idle = state.tokens[getIdleTokenId(tokenId, strategyId)];
-      // const amountWei = parseUnits(amount.toString(), erc20.decimals);
+const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
+  const handleWithdraw = ({ tokenId, strategyId, amountWei }) => {
+    const { idle } = state.tokens[getIdleTokenId(strategyId, tokenId)];
 
-      // get latest price
-      const idleTokenPrice = await idle.contract.tokenPrice();
-      // calculate idleTokenAmount to withdraw
-      // const idleTokenAmount = amountWei.div(idleTokenPrice);
-      // check if idleTokenAmount is not more than balanceIdle, if yes, withdraw all
-      // const withdrawAmount = idleTokenAmount.gt(idle.balanceIdle)
-      //   ? idle.balanceIdle
-      //   : idleTokenAmount;
+    console.log("WITHDRAW", {
+      tokenId,
+      strategyId,
+      amountWei: formatToken(
+        { balance: amountWei, decimals: idle.decimals },
+        { precision: 18 }
+      ),
+      amountMax: formatToken(idle, { precision: 18 }),
+    });
 
-      console.log({
-        max: formatToken({ ...idle, balance: idle.balance }, { fixed: 18 }),
-      });
+    const txs = [
+      {
+        to: idle.contract.address,
+        value: 0,
+        data: idle.contract.interface.functions.redeemIdleToken.encode([
+          amountWei,
+          true,
+          [],
+        ]),
+      },
+    ];
 
-      // withdraw everything for now
-      const txs = [
-        {
-          to: idle.contract.address,
-          value: 0,
-          data: idle.contract.interface.functions.redeemIdleToken.encode([
-            idle.balance,
-            true,
-            [],
-          ]),
-        },
-      ];
-
-      appsSdk.sendTransactions(txs);
-    };
-
-    withdraw();
+    appsSdk.sendTransactions(txs);
   };
 
   return (
@@ -50,6 +40,7 @@ const Withdraw = ({ state, appsSdk, onBackClick }) => {
         state={state}
         onSubmit={handleWithdraw}
         onBackClick={onBackClick}
+        updateTokenPrice={updateTokenPrice}
         formType={FORM_WITHDRAW}
       />
     </React.Fragment>

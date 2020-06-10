@@ -4,9 +4,13 @@ import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
 import {
   balanceToFloat,
+  depositBalanceToFloat,
+  getIdleTokenId,
   formatToken,
   formatAPR,
-  getIdleTokenId,
+  formatDepositBalance,
+  parseUnits,
+  tokenPriceToFloat,
 } from "../utils";
 
 import styles from "./Form.module.css";
@@ -19,57 +23,96 @@ const buttonLabels = {
   [FORM_WITHDRAW]: "Withdraw",
 };
 
-const getFormToken = (state, formType, tokenId, strategyId) => {
+const getFormTokenBalance = (formToken, formType) => {
   if (formType === FORM_DEPOSIT) {
-    return state.tokens[tokenId];
-  }
-  if (formType === FORM_WITHDRAW) {
-    return state.tokens[getIdleTokenId(tokenId, strategyId)];
-  }
-};
-
-const getFormTokenBalance = (formToken, formType, tokenId) => {
-  if (formType === FORM_DEPOSIT) {
-    return `Balance: ${formatToken(formToken)}`;
+    return `Balance: ${formatToken(formToken.underlying)}`;
   }
 
   if (formType === FORM_WITHDRAW) {
-    return `Deposit balance: ${formatToken(formToken, {
-      withSymbol: false,
-    })} ${tokenId.toUpperCase()}`;
+    return `Deposit balance: ${formatDepositBalance(formToken)}`;
   }
 };
 
-const Form = ({ state, onSubmit, onBackClick, formType }) => {
+const calculateMaxAmount = (formType, formToken) => {
+  if (formType === FORM_DEPOSIT) {
+    return balanceToFloat(formToken.underlying);
+  }
+
+  if (formType === FORM_WITHDRAW) {
+    return depositBalanceToFloat(formToken);
+  }
+};
+
+const calculateRealAmountWei = (formType, formToken, amount) => {
+  if (formType === FORM_DEPOSIT) {
+    return parseUnits(amount.toString(), formToken.underlying.decimals);
+  }
+
+  if (formType === FORM_WITHDRAW) {
+    // divide amount by tokenPrice
+    const idleBalanceFloat = roundToDecimals(
+      amount / tokenPriceToFloat(formToken),
+      formToken.idle.decimals
+    );
+    return parseUnits(idleBalanceFloat.toString(), formToken.idle.decimals);
+  }
+};
+
+const roundToDecimals = (number, decimals) =>
+  parseFloat(number.toFixed(decimals));
+
+const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(""); // user friendly amount always in underlying token
+  const [realAmountWei, setRealAmountWei] = useState(""); // when withdraw -> amount of idle tokens; when deposit -> amount of underlying tokens
   const [isValid, setIsValid] = useState(false);
-  const [idleToken, setIdleToken] = useState(
-    state.tokens[getIdleTokenId(tokenId, strategyId)]
-  );
+
+  const { tokens } = state;
+
   const [formToken, setFormToken] = useState(
-    getFormToken(state, formType, tokenId, strategyId)
+    tokens[getIdleTokenId(strategyId, tokenId)]
+  );
+  const [maxAmount, setMaxAmount] = useState(
+    calculateMaxAmount(formType, formToken)
   );
 
+  // update the token this form currently operates on, based on strategy and token dropdowns
   useEffect(() => {
-    setFormToken(getFormToken(state, formType, tokenId, strategyId));
-    setIdleToken(state.tokens[getIdleTokenId(tokenId, strategyId)]);
-  }, [formType, tokenId, strategyId]);
+    const newFormToken = tokens[getIdleTokenId(strategyId, tokenId)];
+    setFormToken(newFormToken);
+    setMaxAmount(calculateMaxAmount(formType, newFormToken));
+    setAmount("");
+  }, [formType, tokens, tokenId, strategyId]);
 
+  // update price on withdraw form
   useEffect(() => {
-    const maxAmount = balanceToFloat(formToken);
+    if (updateTokenPrice && typeof updateTokenPrice === "function") {
+      updateTokenPrice(strategyId, tokenId);
+    }
+  }, [strategyId, tokenId]); // cannot add updateTokenPrice as it changes every time the price updates causing infinite rerender loop
 
+  // simple form validation
+  useEffect(() => {
     if (amount !== "" && amount <= maxAmount && amount > 0) {
       setIsValid(true);
     } else {
       setIsValid(false);
     }
-  }, [amount, formToken]);
+  }, [amount, maxAmount]);
+
+  // update realAmountWei when amount change
+  useEffect(() => {
+    if (amount !== "" && !isNaN(amount)) {
+      setRealAmountWei(calculateRealAmountWei(formType, formToken, amount));
+    } else {
+      setRealAmountWei("");
+    }
+  }, [formType, formToken, amount]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ tokenId, strategyId, amount });
+    onSubmit({ tokenId, strategyId, amountWei: realAmountWei });
   };
 
   return (
@@ -83,7 +126,7 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
       <div>
         <label className={styles.assetLabel}>
           <Text size="lg">Asset</Text>
-          <Text size="lg">{`APR: ${formatAPR(idleToken.avgAPR)}`}</Text>
+          <Text size="lg">{`APR: ${formatAPR(formToken.avgAPR)}`}</Text>
         </label>
         <TokenSelect value={tokenId} onChange={setTokenId} />
       </div>
@@ -98,14 +141,27 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
             label="Amount"
             type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value !== "") {
+                setAmount(
+                  roundToDecimals(
+                    parseFloat(e.target.value),
+                    formToken.underlying.decimals
+                  )
+                );
+              } else {
+                setAmount("");
+              }
+            }}
           />
           <div className={styles.split}>
             <button
               className={styles.link}
               type="button"
               onClick={() =>
-                setAmount(balanceToFloat(formToken, { divideBy: 4 }))
+                setAmount(
+                  roundToDecimals(maxAmount / 4, formToken.underlying.decimals)
+                )
               }
             >
               <Text size="md">25%</Text>
@@ -114,7 +170,9 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
               className={styles.link}
               type="button"
               onClick={() =>
-                setAmount(balanceToFloat(formToken, { divideBy: 2 }))
+                setAmount(
+                  roundToDecimals(maxAmount / 2, formToken.underlying.decimals)
+                )
               }
             >
               <Text size="md">50%</Text>
@@ -124,7 +182,10 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
               type="button"
               onClick={() =>
                 setAmount(
-                  balanceToFloat(formToken, { divideBy: 4, multiBy: 3 })
+                  roundToDecimals(
+                    (maxAmount * 3) / 4,
+                    formToken.underlying.decimals
+                  )
                 )
               }
             >
@@ -133,7 +194,7 @@ const Form = ({ state, onSubmit, onBackClick, formType }) => {
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(balanceToFloat(formToken))}
+              onClick={() => setAmount(maxAmount)}
             >
               <Text size="md">MAX</Text>
             </button>

@@ -1,19 +1,32 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Form, { FORM_DEPOSIT } from "../components/Form";
-import { getIdleTokenId, parseUnits } from "../utils";
+import { getIdleTokenId, formatToken } from "../utils";
 
 const Deposit = ({ state, appsSdk, onBackClick }) => {
-  const handleDeposit = ({ tokenId, strategyId, amount }) => {
-    const erc20 = state.tokens[tokenId];
-    const idle = state.tokens[getIdleTokenId(tokenId, strategyId)];
-    const amountWei = parseUnits(amount.toString(), erc20.decimals);
+  const handleDeposit = ({ tokenId, strategyId, amountWei }) => {
+    const { underlying, idle } = state.tokens[
+      getIdleTokenId(strategyId, tokenId)
+    ];
+
+    console.log("DEPOSIT", {
+      tokenId,
+      strategyId,
+      amountWei: formatToken(
+        {
+          balance: amountWei,
+          decimals: underlying.decimals,
+        },
+        { precision: 18 }
+      ),
+      amountMax: formatToken(underlying, { precision: 18 }),
+    });
 
     const txs = [
       {
-        to: erc20.contract.address,
+        to: underlying.contract.address,
         value: 0,
-        data: erc20.contract.interface.functions.approve.encode([
+        data: underlying.contract.interface.functions.approve.encode([
           idle.contract.address,
           amountWei,
         ]),
