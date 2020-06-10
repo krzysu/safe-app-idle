@@ -1,4 +1,5 @@
 import { PAGE_OVERVIEW } from "./const";
+import { getIdleTokenId } from "./utils";
 
 export const initialState = {
   isLoaded: false,
@@ -41,6 +42,7 @@ export const initialState = {
 const SET_SAFE_INFO = "SET_SAFE_INFO";
 const SET_TOKENS = "SET_TOKENS";
 const GO_TO_PAGE = "GO_TO_PAGE";
+const UPDATE_TOKEN_PRICE = "UPDATE_TOKEN_PRICE";
 
 export const actions = {
   setSafeInfo: (safeInfo) => ({
@@ -57,6 +59,24 @@ export const actions = {
     type: GO_TO_PAGE,
     payload: { page, data },
   }),
+
+  updateTokenPrice: (strategyId, tokenId, price) => ({
+    type: UPDATE_TOKEN_PRICE,
+    payload: { strategyId, tokenId, price },
+  }),
+};
+
+// reducer helpers
+const updateTokenPrice = (tokens, { strategyId, tokenId, price }) => {
+  const idleId = getIdleTokenId(strategyId, tokenId);
+
+  return {
+    ...tokens,
+    [idleId]: {
+      ...tokens[idleId],
+      tokenPrice: price,
+    },
+  };
 };
 
 export const reducer = (state, action) => {
@@ -83,6 +103,12 @@ export const reducer = (state, action) => {
         currentPage: action.payload.page,
         currentTokenId: action.payload.data.tokenId,
         currentStrategyId: action.payload.data.strategyId,
+      };
+
+    case UPDATE_TOKEN_PRICE:
+      return {
+        ...state,
+        tokens: updateTokenPrice(state.tokens, action.payload),
       };
 
     default:

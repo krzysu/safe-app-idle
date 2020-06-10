@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useCallback, useReducer } from "react";
 import { ThemeProvider } from "styled-components";
 import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import { theme } from "@gnosis.pm/safe-react-components";
@@ -17,6 +17,8 @@ const App = () => {
   const [appsSdk] = useState(initSdk());
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const { safeInfo, currentPage, isLoaded } = state;
+
   useEffect(() => {
     appsSdk.addListeners({
       onSafeInfo: (safeInfo) => {
@@ -28,7 +30,7 @@ const App = () => {
   }, [appsSdk]);
 
   useEffect(() => {
-    const { network, safeAddress } = state.safeInfo;
+    const { network, safeAddress } = safeInfo;
 
     const initTokens = async () => {
       const tokens = await initAllTokens(network, safeAddress);
@@ -38,25 +40,33 @@ const App = () => {
     if (safeAddress !== "") {
       initTokens();
     }
-  }, [state.safeInfo]);
+  }, [safeInfo]);
 
-  if (!state.isLoaded) {
+  const updateTokenPrice = useCallback((strategyId, tokenId, price) => {
+    dispatch(actions.updateTokenPrice(strategyId, tokenId, price));
+  }, []);
+
+  const goToDeposit = useCallback(
+    (tokenId, strategyId) => () => {
+      dispatch(actions.goToPage(PAGE_DEPOSIT, { tokenId, strategyId }));
+    },
+    []
+  );
+
+  const goToWithdraw = useCallback(
+    (tokenId, strategyId) => () => {
+      dispatch(actions.goToPage(PAGE_WITHDRAW, { tokenId, strategyId }));
+    },
+    []
+  );
+
+  const goToOverview = useCallback(() => {
+    dispatch(actions.goToPage(PAGE_OVERVIEW));
+  }, []);
+
+  if (!isLoaded) {
     return <Loader size="md" />;
   }
-
-  const goToDeposit = (tokenId, strategyId) => () => {
-    dispatch(actions.goToPage(PAGE_DEPOSIT, { tokenId, strategyId }));
-  };
-
-  const goToWithdraw = (tokenId, strategyId) => () => {
-    dispatch(actions.goToPage(PAGE_WITHDRAW, { tokenId, strategyId }));
-  };
-
-  const goToOverview = () => {
-    dispatch(actions.goToPage(PAGE_OVERVIEW));
-  };
-
-  const { currentPage } = state;
 
   return (
     <ThemeProvider theme={theme}>
@@ -72,7 +82,12 @@ const App = () => {
         <Deposit state={state} appsSdk={appsSdk} onBackClick={goToOverview} />
       )}
       {currentPage === PAGE_WITHDRAW && (
-        <Withdraw state={state} appsSdk={appsSdk} onBackClick={goToOverview} />
+        <Withdraw
+          state={state}
+          appsSdk={appsSdk}
+          onBackClick={goToOverview}
+          updateTokenPrice={updateTokenPrice}
+        />
       )}
       <footer>
         <Text size="md">

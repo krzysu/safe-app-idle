@@ -3,7 +3,7 @@ import { Title } from "@gnosis.pm/safe-react-components";
 import Form, { FORM_WITHDRAW } from "../components/Form";
 import { getIdleTokenId, parseUnits, formatToken } from "../utils";
 
-const Withdraw = ({ state, appsSdk, onBackClick }) => {
+const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
   const handleWithdraw = ({ tokenId, strategyId, amount }) => {
     const withdraw = async () => {
       const erc20 = state.tokens[tokenId];
@@ -50,6 +50,7 @@ const Withdraw = ({ state, appsSdk, onBackClick }) => {
         state={state}
         onSubmit={handleWithdraw}
         onBackClick={onBackClick}
+        updateTokenPrice={updateTokenPrice}
         formType={FORM_WITHDRAW}
       />
     </React.Fragment>

@@ -30,20 +30,34 @@ const getFormTokenBalance = (formToken, formType) => {
   }
 };
 
-const Form = ({ state, onSubmit, onBackClick, formType }) => {
+const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
   const [amount, setAmount] = useState("");
   const [isValid, setIsValid] = useState(false);
 
+  const { tokens } = state;
+
   const [formToken, setFormToken] = useState(
-    state.tokens[getIdleTokenId(strategyId, tokenId)]
+    tokens[getIdleTokenId(strategyId, tokenId)]
   );
 
   useEffect(() => {
-    setFormToken(state.tokens[getIdleTokenId(strategyId, tokenId)]);
-  }, [tokenId, strategyId]);
+    setFormToken(tokens[getIdleTokenId(strategyId, tokenId)]);
+  }, [tokens, tokenId, strategyId]);
 
+  useEffect(() => {
+    const run = async () => {
+      const tokenPrice = await formToken.idle.contract.tokenPrice();
+      updateTokenPrice(strategyId, tokenId, tokenPrice);
+    };
+
+    if (updateTokenPrice && typeof updateTokenPrice === "function") {
+      run();
+    }
+  }, [updateTokenPrice, strategyId, tokenId]); // cannot put formToken as effect dependency as it triggers infinite rerender loop
+
+  console.log("render");
   // TODO figure out how to set amount in underlying for deposit and depositBalance for withdraw
 
   // useEffect(() => {
