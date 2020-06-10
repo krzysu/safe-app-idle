@@ -9,15 +9,16 @@ import Overview from "./pages/Overview";
 import Withdraw from "./pages/Withdraw";
 import Deposit from "./pages/Deposit";
 
+import { PAGE_OVERVIEW, PAGE_DEPOSIT, PAGE_WITHDRAW } from "./const";
 import { initAllTokens } from "./contracts";
 import { reducer, initialState, actions } from "./reducer";
-import { PAGE_OVERVIEW, PAGE_DEPOSIT, PAGE_WITHDRAW } from "./const";
+import { getIdleTokenId } from "./utils";
 
 const App = () => {
   const [appsSdk] = useState(initSdk());
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { safeInfo, currentPage, isLoaded } = state;
+  const { safeInfo, currentPage, isLoaded, tokens } = state;
 
   useEffect(() => {
     appsSdk.addListeners({
@@ -33,8 +34,8 @@ const App = () => {
     const { network, safeAddress } = safeInfo;
 
     const initTokens = async () => {
-      const tokens = await initAllTokens(network, safeAddress);
-      dispatch(actions.setTokens(tokens));
+      const allTokens = await initAllTokens(network, safeAddress);
+      dispatch(actions.setTokens(allTokens));
     };
 
     if (safeAddress !== "") {
@@ -42,9 +43,15 @@ const App = () => {
     }
   }, [safeInfo]);
 
-  const updateTokenPrice = useCallback((strategyId, tokenId, price) => {
-    dispatch(actions.updateTokenPrice(strategyId, tokenId, price));
-  }, []);
+  const updateTokenPrice = useCallback(
+    async (strategyId, tokenId) => {
+      const token = tokens[getIdleTokenId(strategyId, tokenId)];
+      const tokenPrice = await token.idle.contract.tokenPrice();
+
+      dispatch(actions.updateTokenPrice(strategyId, tokenId, tokenPrice));
+    },
+    [tokens]
+  );
 
   const goToDeposit = useCallback(
     (tokenId, strategyId) => () => {

@@ -5,6 +5,7 @@ import StrategySelect from "./StrategySelect";
 import {
   getIdleTokenId,
   balanceToFloat,
+  depositBalanceToFloat,
   formatToken,
   formatAPR,
   formatDepositBalance,
@@ -30,10 +31,30 @@ const getFormTokenBalance = (formToken, formType) => {
   }
 };
 
+const calculateMaxAmount = (formType, formToken) => {
+  if (formType === FORM_DEPOSIT) {
+    return balanceToFloat(formToken.underlying);
+  }
+
+  if (formType === FORM_WITHDRAW) {
+    return depositBalanceToFloat(formToken);
+  }
+};
+
+const calculateRealAmountWei = () => {
+  // calculate idleTokenAmount to withdraw
+  // const idleTokenAmount = amountWei.div(idleTokenPrice);
+  // check if idleTokenAmount is not more than balanceIdle, if yes, withdraw all
+  // const withdrawAmount = idleTokenAmount.gt(idle.balanceIdle)
+  //   ? idle.balanceIdle
+  //   : idleTokenAmount;
+};
+
 const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(""); // user friendly amount always in underlying token
+  const [realAmountWei, setRealAmountWei] = useState(""); // when withdraw -> amount of idle tokens; when deposit -> amount of underlying tokens
   const [isValid, setIsValid] = useState(false);
 
   const { tokens } = state;
@@ -41,39 +62,39 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [formToken, setFormToken] = useState(
     tokens[getIdleTokenId(strategyId, tokenId)]
   );
+  const [maxAmount, setMaxAmount] = useState(
+    calculateMaxAmount(formType, formToken)
+  );
 
+  // update the token this form currently operates on, based on strategy and token dropdowns
   useEffect(() => {
-    setFormToken(tokens[getIdleTokenId(strategyId, tokenId)]);
-  }, [tokens, tokenId, strategyId]);
+    const newFormToken = tokens[getIdleTokenId(strategyId, tokenId)];
+    setFormToken(newFormToken);
+    setMaxAmount(calculateMaxAmount(formType, newFormToken));
+  }, [formType, tokens, tokenId, strategyId]);
 
+  // update price on withdraw form
   useEffect(() => {
-    const run = async () => {
-      const tokenPrice = await formToken.idle.contract.tokenPrice();
-      updateTokenPrice(strategyId, tokenId, tokenPrice);
-    };
-
     if (updateTokenPrice && typeof updateTokenPrice === "function") {
-      run();
+      updateTokenPrice(strategyId, tokenId);
     }
-  }, [updateTokenPrice, strategyId, tokenId]); // cannot put formToken as effect dependency as it triggers infinite rerender loop
+  }, [strategyId, tokenId]); // cannot add updateTokenPrice as it changes every time the price updates causing infinite rerender loop
 
-  console.log("render");
-  // TODO figure out how to set amount in underlying for deposit and depositBalance for withdraw
-
-  // useEffect(() => {
-  //   const maxAmount = balanceToFloat(formToken.underlying);
-
-  //   if (amount !== "" && amount <= maxAmount && amount > 0) {
-  //     setIsValid(true);
-  //   } else {
-  //     setIsValid(false);
-  //   }
-  // }, [amount, formToken]);
+  // simple form validation
+  useEffect(() => {
+    if (amount !== "" && amount <= maxAmount && amount > 0) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+    }
+  }, [amount, maxAmount]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ tokenId, strategyId, amount });
+    onSubmit({ tokenId, strategyId, amountWei: realAmountWei });
   };
+
+  console.log("render");
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
@@ -107,36 +128,28 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
             <button
               className={styles.link}
               type="button"
-              onClick={() =>
-                setAmount(balanceToFloat(formToken, { divideBy: 4 }))
-              }
+              onClick={() => setAmount(maxAmount / 4)}
             >
               <Text size="md">25%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() =>
-                setAmount(balanceToFloat(formToken, { divideBy: 2 }))
-              }
+              onClick={() => setAmount(maxAmount / 2)}
             >
               <Text size="md">50%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() =>
-                setAmount(
-                  balanceToFloat(formToken, { divideBy: 4, multiBy: 3 })
-                )
-              }
+              onClick={() => setAmount((maxAmount * 3) / 4)}
             >
               <Text size="md">75%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(balanceToFloat(formToken))}
+              onClick={() => setAmount(maxAmount)}
             >
               <Text size="md">MAX</Text>
             </button>

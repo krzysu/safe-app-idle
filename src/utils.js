@@ -8,12 +8,8 @@ export const formatToken = ({ balance, decimals }, { precision = 8 } = {}) => {
   return Number.parseFloat(balanceString).toFixed(precision);
 };
 
-export const balanceToFloat = (
-  { balance, decimals },
-  { divideBy = 1, multiBy = 1 } = {}
-) => {
-  const newBalance = balance.div(divideBy).mul(multiBy);
-  const balanceString = ethers.utils.formatUnits(newBalance, decimals);
+export const balanceToFloat = ({ balance, decimals }) => {
+  const balanceString = ethers.utils.formatUnits(balance, decimals);
   return Number.parseFloat(balanceString);
 };
 
