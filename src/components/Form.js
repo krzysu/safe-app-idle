@@ -3,12 +3,13 @@ import { Button, Text, TextField } from "@gnosis.pm/safe-react-components";
 import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
 import {
-  getIdleTokenId,
   balanceToFloat,
   depositBalanceToFloat,
+  getIdleTokenId,
   formatToken,
   formatAPR,
   formatDepositBalance,
+  parseUnits,
 } from "../utils";
 
 import styles from "./Form.module.css";
@@ -41,14 +42,20 @@ const calculateMaxAmount = (formType, formToken) => {
   }
 };
 
-const calculateRealAmountWei = () => {
-  // calculate idleTokenAmount to withdraw
-  // const idleTokenAmount = amountWei.div(idleTokenPrice);
-  // check if idleTokenAmount is not more than balanceIdle, if yes, withdraw all
-  // const withdrawAmount = idleTokenAmount.gt(idle.balanceIdle)
-  //   ? idle.balanceIdle
-  //   : idleTokenAmount;
+const calculateRealAmountWei = (formType, formToken, amount) => {
+  if (formType === FORM_DEPOSIT) {
+    return parseUnits(amount.toString(), formToken.underlying.decimals);
+  }
+
+  if (formType === FORM_WITHDRAW) {
+    // return idle balance in wei
+    // divide amount by price
+    return "";
+  }
 };
+
+const roundToDecimals = (number, decimals) =>
+  parseFloat(number.toFixed(decimals));
 
 const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
@@ -71,6 +78,7 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
     const newFormToken = tokens[getIdleTokenId(strategyId, tokenId)];
     setFormToken(newFormToken);
     setMaxAmount(calculateMaxAmount(formType, newFormToken));
+    setAmount("");
   }, [formType, tokens, tokenId, strategyId]);
 
   // update price on withdraw form
@@ -89,12 +97,21 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
     }
   }, [amount, maxAmount]);
 
+  // update realAmountWei when amount change
+  useEffect(() => {
+    if (amount !== "" && !isNaN(amount)) {
+      setRealAmountWei(calculateRealAmountWei(formType, formToken, amount));
+    } else {
+      setRealAmountWei("");
+    }
+  }, [formType, formToken, amount]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({ tokenId, strategyId, amountWei: realAmountWei });
   };
 
-  console.log("render");
+  console.log("render", { realAmountWei, amount });
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
@@ -122,27 +139,53 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
             label="Amount"
             type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value !== "") {
+                setAmount(
+                  roundToDecimals(
+                    parseFloat(e.target.value),
+                    formToken.underlying.decimals
+                  )
+                );
+              } else {
+                setAmount("");
+              }
+            }}
           />
           <div className={styles.split}>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(maxAmount / 4)}
+              onClick={() =>
+                setAmount(
+                  roundToDecimals(maxAmount / 4, formToken.underlying.decimals)
+                )
+              }
             >
               <Text size="md">25%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(maxAmount / 2)}
+              onClick={() =>
+                setAmount(
+                  roundToDecimals(maxAmount / 2, formToken.underlying.decimals)
+                )
+              }
             >
               <Text size="md">50%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount((maxAmount * 3) / 4)}
+              onClick={() =>
+                setAmount(
+                  roundToDecimals(
+                    (maxAmount * 3) / 4,
+                    formToken.underlying.decimals
+                  )
+                )
+              }
             >
               <Text size="md">75%</Text>
             </button>

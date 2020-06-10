@@ -12,10 +12,14 @@ const Deposit = ({ state, appsSdk, onBackClick }) => {
     console.log("DEPOSIT", {
       tokenId,
       strategyId,
-      amountWei: formatToken({
-        balance: amountWei,
-        decimals: underlying.decimals,
-      }),
+      amountWei: formatToken(
+        {
+          balance: amountWei,
+          decimals: underlying.decimals,
+        },
+        { precision: 18 }
+      ),
+      amountMax: formatToken(underlying, { precision: 18 }),
     });
 
     const txs = [

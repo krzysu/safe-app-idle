@@ -18,7 +18,7 @@ export const formatAPR = (balance = "0") => {
   return `${Number.parseFloat(aprString).toFixed(2)}%`;
 };
 
-export const parseUnits = (valueString, decimals = 18) =>
+export const parseUnits = (valueString, decimals) =>
   ethers.utils.parseUnits(valueString, decimals);
 
 const tokenPriceToFloat = (token) =>

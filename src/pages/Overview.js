@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Table from "../components/Table";
 import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../const";
@@ -14,11 +14,17 @@ const findAllByStrategy = (tokenArray, strategyId) => {
 
 const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
   const { tokens } = state;
-  const tokenArray = Object.keys(tokens).map((key) => tokens[key]);
-  const maxYieldTokens = findAllByStrategy(tokenArray, STRATEGY_MAXYIELD);
-  const riskAdjustedTokens = findAllByStrategy(
-    tokenArray,
-    STRATEGY_RISKADJUSTED
+  const tokenArray = useMemo(
+    () => Object.keys(tokens).map((key) => tokens[key]),
+    [tokens]
+  );
+  const maxYieldTokens = useMemo(
+    () => findAllByStrategy(tokenArray, STRATEGY_MAXYIELD),
+    [tokenArray]
+  );
+  const riskAdjustedTokens = useMemo(
+    () => findAllByStrategy(tokenArray, STRATEGY_RISKADJUSTED),
+    [tokenArray]
   );
 
   return (
