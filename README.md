@@ -17,7 +17,7 @@ yarn start
 
 Then:
 
-- Go to Rinkeby version of Gnosis Safe [https://rinkeby.gnosis-safe.io/](https://rinkeby.gnosis-safe.io/)
+- Go to Rinkeby version of Gnosis Safe [https://rinkeby.gnosis-safe.io/app](https://rinkeby.gnosis-safe.io/app)
 - Create your test safe
 - Go to Apps -> Manage Apps -> Add Custom App
 - Paste your localhost url, default is http://localhost:3003/
@@ -37,8 +37,38 @@ They work with these Rinkeby ERC20 tokens:
   - Rinkeby address 0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8
   - You can mint them yourself using Etherscan
 
+## How it could work to test with ganache mainnet fork (but it didn't work for me so far)
+
+Start local mainnet fork, you need Infura Project Id
+
+```
+yarn ganache:fork https://mainnet.infura.io/v3/INFURA_PROJECT_ID
+```
+
+Add new network in MetaMask.
+
+- Network Name: `Mainnet Fork`
+- New RPC URL: `http://127.0.0.1:8545`
+- ChainID: `1`
+
+You need to have a MetaMask account with some mainnet ETH or use one of the accounts provided by Ganache.
+
+Go to Gnosis Safe on Mainnet: [https://gnosis-safe.io/app](https://gnosis-safe.io/app)
+
+Create new Safe. Transfer some DAI, USDC and USDT to your new Safe. **Make sure that you are connected to Mainnet Fork all the time.**
+
+You can use script I prepared. Just configure proper env vars first.
+
+```
+node scripts/getFunds.js
+```
+
+Connect local version of Idle Safe App with Mainnet Fork Gnosis Safe.
+
+To make the process faster you can first create a Safe on Mainnet, add some real funds there, and then just test transactions on the Mainnet Fork.
+
 ## Still to do
 
 - probably rewrite all number operations to BigNumber
-- test on mainnet / ganache fork
+- test on mainnet
 - improve README

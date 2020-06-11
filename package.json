@@ -19,13 +19,16 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "dotenv": "^8.2.0",
+    "ganache-cli": "^6.9.1",
     "react-app-rewired": "^2.1.6",
     "react-scripts": "3.4.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test"
+    "test": "react-app-rewired test",
+    "ganache:fork": "ganache-cli -i 1 -b 3 -f"
   },
   "eslintConfig": {
     "extends": "react-app"
