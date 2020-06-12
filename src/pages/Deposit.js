@@ -1,7 +1,8 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
-import Form, { FORM_DEPOSIT } from "../components/Form";
+import Form from "../components/Form";
 import { getIdleTokenId, formatToken } from "../utils";
+import { FORM_DEPOSIT } from "../const";
 
 const Deposit = ({ state, appsSdk, onBackClick }) => {
   const handleDeposit = ({ tokenId, strategyId, amountWei }) => {

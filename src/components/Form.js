@@ -3,21 +3,19 @@ import { Button, Text, TextField } from "@gnosis.pm/safe-react-components";
 import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
 import {
-  balanceToFloat,
-  depositBalanceToFloat,
+  calculateMaxAmount,
+  calculateRealAmountWei,
   getIdleTokenId,
   formatToken,
   formatAPR,
   formatDepositBalance,
-  parseUnits,
-  tokenPriceToFloat,
+  parseTextFieldValue,
+  roundToDecimals,
   toFixedSpecial,
 } from "../utils";
+import { FORM_DEPOSIT, FORM_WITHDRAW } from "../const";
 
 import styles from "./Form.module.css";
-
-export const FORM_DEPOSIT = "FORM_DEPOSIT";
-export const FORM_WITHDRAW = "FORM_WITHDRAW";
 
 const buttonLabels = {
   [FORM_DEPOSIT]: "Deposit",
@@ -33,40 +31,6 @@ const getFormTokenBalance = (formToken, formType) => {
     return `Deposit balance: ${formatDepositBalance(formToken)}`;
   }
 };
-
-const calculateMaxAmount = (formType, formToken) => {
-  if (formType === FORM_DEPOSIT) {
-    return balanceToFloat(formToken.underlying);
-  }
-
-  if (formType === FORM_WITHDRAW) {
-    return depositBalanceToFloat(formToken);
-  }
-};
-
-const calculateRealAmountWei = (formType, formToken, amount) => {
-  if (formType === FORM_DEPOSIT) {
-    return parseUnits(
-      amount.toFixed(formToken.underlying.decimals),
-      formToken.underlying.decimals
-    );
-  }
-
-  if (formType === FORM_WITHDRAW) {
-    // divide amount by tokenPrice
-    const idleBalanceFloat = roundToDecimals(
-      amount / tokenPriceToFloat(formToken),
-      formToken.idle.decimals
-    );
-    return parseUnits(
-      idleBalanceFloat.toFixed(formToken.idle.decimals),
-      formToken.idle.decimals
-    );
-  }
-};
-
-const roundToDecimals = (number, decimals) =>
-  parseFloat(number.toFixed(decimals));
 
 const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
@@ -151,8 +115,8 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
             onChange={(e) => {
               if (e.target.value !== "") {
                 setAmount(
-                  roundToDecimals(
-                    parseFloat(e.target.value),
+                  parseTextFieldValue(
+                    e.target.value,
                     formToken.underlying.decimals
                   )
                 );

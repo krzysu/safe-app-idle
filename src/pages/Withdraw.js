@@ -1,7 +1,8 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
-import Form, { FORM_WITHDRAW } from "../components/Form";
+import Form from "../components/Form";
 import { getIdleTokenId, formatToken } from "../utils";
+import { FORM_WITHDRAW } from "../const";
 
 const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
   const handleWithdraw = ({ tokenId, strategyId, amountWei }) => {

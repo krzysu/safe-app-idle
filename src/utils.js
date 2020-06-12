@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { FORM_DEPOSIT, FORM_WITHDRAW } from "./const";
 
 // handle very small and big number with e notation
 export const toFixedSpecial = (x) => {
@@ -32,7 +33,7 @@ export const balanceToFloat = ({ balance, decimals }) => {
   return Number.parseFloat(balanceString);
 };
 
-export const formatAPR = (balance = "0") => {
+export const formatAPR = (balance) => {
   const aprString = ethers.utils.formatUnits(balance, 18);
   return `${Number.parseFloat(aprString).toFixed(2)}%`;
 };
@@ -52,3 +53,40 @@ export const depositBalanceToFloat = (token) =>
 
 export const formatDepositBalance = (token, { precision = 8 } = {}) =>
   Number.parseFloat(depositBalanceToFloat(token)).toFixed(precision);
+
+export const roundToDecimals = (number, decimals) =>
+  Number.parseFloat(number.toFixed(decimals));
+
+export const parseTextFieldValue = (value, decimals) =>
+  roundToDecimals(Number.parseFloat(value), decimals);
+
+export const calculateMaxAmount = (formType, formToken) => {
+  if (formType === FORM_DEPOSIT) {
+    return balanceToFloat(formToken.underlying);
+  }
+
+  if (formType === FORM_WITHDRAW) {
+    return depositBalanceToFloat(formToken);
+  }
+};
+
+export const calculateRealAmountWei = (formType, formToken, amount) => {
+  if (formType === FORM_DEPOSIT) {
+    return parseUnits(
+      amount.toFixed(formToken.underlying.decimals),
+      formToken.underlying.decimals
+    );
+  }
+
+  if (formType === FORM_WITHDRAW) {
+    // divide amount by tokenPrice
+    const idleBalanceFloat = roundToDecimals(
+      amount / tokenPriceToFloat(formToken),
+      formToken.idle.decimals
+    );
+    return parseUnits(
+      idleBalanceFloat.toFixed(formToken.idle.decimals),
+      formToken.idle.decimals
+    );
+  }
+};
