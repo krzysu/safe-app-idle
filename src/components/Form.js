@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Button, Text, TextField } from "@gnosis.pm/safe-react-components";
-import BigNumber from "bignumber.js";
 import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
 import {
@@ -32,30 +31,32 @@ const getFormTokenBalance = (formToken, formType) => {
 };
 
 const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
-  const [tokenId, setTokenId] = useState(state.currentTokenId);
-  const [strategyId, setStrategyId] = useState(state.currentStrategyId);
-  const [amountBN, setAmountBN] = useState(""); // user friendly amount always in underlying token
-  const [realAmountWei, setRealAmountWei] = useState(""); // when withdraw -> amount of idle tokens; when deposit -> amount of underlying tokens
-  const [isValid, setIsValid] = useState(false);
-
   const { tokens } = state;
 
+  const [tokenId, setTokenId] = useState(state.currentTokenId);
+  const [strategyId, setStrategyId] = useState(state.currentStrategyId);
+  const [amountBN, setAmountBN] = useState(BNify(0)); // user friendly amount always in underlying token
+  const [isValid, setIsValid] = useState(false);
   const [formToken, setFormToken] = useState(
     tokens[getIdleTokenId(strategyId, tokenId)]
   );
   const [maxAmountBN, setMaxAmountBN] = useState(
     calculateMaxAmountBN(formType, formToken)
   );
+  // when withdraw -> amount of idle tokens; when deposit -> amount of underlying tokens
+  const [realAmountWei, setRealAmountWei] = useState(
+    calculateRealAmountWei(formType, formToken, amountBN)
+  );
 
-  // update the token this form currently operates on, based on strategy and token dropdowns
+  // update the token which form currently operates on, based on strategy and token dropdowns
   useEffect(() => {
     const newFormToken = tokens[getIdleTokenId(strategyId, tokenId)];
     setFormToken(newFormToken);
     setMaxAmountBN(calculateMaxAmountBN(formType, newFormToken));
-    setAmountBN("");
+    setAmountBN(BNify(0));
   }, [formType, tokens, tokenId, strategyId]);
 
-  // update price on withdraw form
+  // update price on withdraw form to show actual deposit balance
   useEffect(() => {
     if (updateTokenPrice && typeof updateTokenPrice === "function") {
       updateTokenPrice(strategyId, tokenId);
@@ -64,7 +65,7 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
 
   // simple form validation
   useEffect(() => {
-    if (amountBN !== "" && amountBN.lte(maxAmountBN) && amountBN.gt(0)) {
+    if (amountBN.gt(0) && amountBN.lte(maxAmountBN)) {
       setIsValid(true);
     } else {
       setIsValid(false);
@@ -73,11 +74,7 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
 
   // update realAmountWei when amountBN change
   useEffect(() => {
-    if (amountBN !== "" && BigNumber.isBigNumber(amountBN)) {
-      setRealAmountWei(calculateRealAmountWei(formType, formToken, amountBN));
-    } else {
-      setRealAmountWei("");
-    }
+    setRealAmountWei(calculateRealAmountWei(formType, formToken, amountBN));
   }, [formType, formToken, amountBN]);
 
   const handleSubmit = (e) => {
@@ -111,16 +108,8 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
             label="Amount"
             type="number"
             placeholder="0.0"
-            value={
-              BigNumber.isBigNumber(amountBN) ? amountBN.toFixed() : amountBN
-            }
-            onChange={(e) => {
-              if (e.target.value !== "") {
-                setAmountBN(BNify(e.target.value));
-              } else {
-                setAmountBN("");
-              }
-            }}
+            value={amountBN.toFixed()}
+            onChange={(e) => setAmountBN(BNify(e.target.value || 0))}
           />
           <div className={styles.split}>
             <button
