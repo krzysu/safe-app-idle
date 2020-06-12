@@ -56,13 +56,6 @@ const testTokenUsdt = {
 };
 
 describe("utils", () => {
-  test("toFixedSpecial", () => {
-    expect(utils.toFixedSpecial(3.5071149939355e-11)).toBe(
-      "0.000000000035071149939355"
-    );
-    expect(utils.toFixedSpecial(3.5071149939355e11)).toBe(350711499393.55);
-  });
-
   test("getIdleTokenId", () => {
     expect(utils.getIdleTokenId(testToken.strategyId, testToken.tokenId)).toBe(
       "maxYield_dai"
@@ -76,25 +69,34 @@ describe("utils", () => {
         precision: 4,
       })
     ).toBe("84.0468");
-  });
-
-  test("balanceToFloat", () => {
-    expect(utils.balanceToFloat(testToken.underlying)).toBe(84.04676153325248);
+    expect(
+      utils.formatToken(testToken.underlying, {
+        precision: 18,
+      })
+    ).toBe("84.046761533252477283");
   });
 
   test("formatAPR", () => {
     expect(utils.formatAPR(testToken.avgAPR)).toBe("2.92%");
   });
 
-  test("tokenPriceToFloat", () => {
-    expect(utils.tokenPriceToFloat(testToken)).toBe(1.0019483972189012);
-    expect(utils.tokenPriceToFloat(testTokenUsdc)).toBe(1.002332);
+  test("tokenPriceToBN", () => {
+    expect(utils.tokenPriceToBN(testToken).toFixed()).toBe(
+      "1.001948397218901252"
+    );
+    expect(utils.tokenPriceToBN(testTokenUsdc).toFixed()).toBe("1.002332");
   });
 
-  test("depositBalanceToFloat", () => {
-    expect(utils.depositBalanceToFloat(testToken)).toBe(15);
-    expect(utils.depositBalanceToFloat(testTokenUsdc)).toBe(5);
-    expect(utils.depositBalanceToFloat(testTokenUsdt)).toBe(24.7519483972189);
+  test("depositBalanceToBN", () => {
+    expect(utils.depositBalanceToBN(testToken).toFixed()).toBe(
+      "15.00000000000000095847250313002091538"
+    );
+    expect(utils.depositBalanceToBN(testTokenUsdc).toFixed()).toBe(
+      "5.00000000000000052868026"
+    );
+    expect(utils.depositBalanceToBN(testTokenUsdt).toFixed()).toBe(
+      "24.75194839721890005471878532481859862"
+    );
   });
 
   test("formatDepositBalance", () => {
@@ -108,51 +110,39 @@ describe("utils", () => {
     );
   });
 
-  test("roundToDecimals", () => {
-    const amount = 0.00051400071149939355;
-    const toBeRounded = amount / 5; // 0.0001028001422998787
-
-    expect(utils.roundToDecimals(toBeRounded, 6)).toBe(0.000103);
-    expect(utils.roundToDecimals(toBeRounded, 18)).toBe(0.000102800142299879);
-  });
-
-  test("parseTextFieldValue", () => {
-    expect(utils.parseTextFieldValue(0.051400071149, 6)).toBe(0.0514);
-    expect(utils.parseTextFieldValue(0.051401071149, 6)).toBe(0.051401);
-    expect(utils.parseTextFieldValue(1.0514000711499393558, 18)).toBe(
-      1.051400071149939355
-    ); // outside of JS numbers
-  });
-
-  test("calculateMaxAmount", () => {
-    expect(utils.calculateMaxAmount(FORM_DEPOSIT, testToken)).toBe(
-      84.04676153325248
+  test("calculateMaxAmountBN", () => {
+    expect(utils.calculateMaxAmountBN(FORM_DEPOSIT, testToken).toFixed()).toBe(
+      "84.046761533252477283"
     );
-    expect(utils.calculateMaxAmount(FORM_WITHDRAW, testToken)).toBe(15);
+    expect(utils.calculateMaxAmountBN(FORM_WITHDRAW, testToken).toFixed()).toBe(
+      "15.00000000000000095847250313002091538"
+    );
 
-    expect(utils.calculateMaxAmount(FORM_DEPOSIT, testTokenUsdc)).toBe(
-      94.020987
-    );
-    expect(utils.calculateMaxAmount(FORM_WITHDRAW, testTokenUsdc)).toBe(5);
+    expect(
+      utils.calculateMaxAmountBN(FORM_DEPOSIT, testTokenUsdc).toFixed()
+    ).toBe("94.020987");
+    expect(
+      utils.calculateMaxAmountBN(FORM_WITHDRAW, testTokenUsdc).toFixed()
+    ).toBe("5.00000000000000052868026");
 
-    expect(utils.calculateMaxAmount(FORM_DEPOSIT, testTokenUsdt)).toBe(
-      74.2558451916567
-    );
-    expect(utils.calculateMaxAmount(FORM_WITHDRAW, testTokenUsdt)).toBe(
-      24.7519483972189
-    );
+    expect(
+      utils.calculateMaxAmountBN(FORM_DEPOSIT, testTokenUsdt).toFixed()
+    ).toBe("74.255845191656704952");
+    expect(
+      utils.calculateMaxAmountBN(FORM_WITHDRAW, testTokenUsdt).toFixed()
+    ).toBe("24.75194839721890005471878532481859862");
   });
 
   test("calculateRealAmountWei FORM_DEPOSIT", () => {
     // get maxAmount, then calculateRealAmountWei, and compare with token balance
-    const maxAmount = utils.calculateMaxAmount(FORM_DEPOSIT, testToken);
+    const maxAmountBN = utils.calculateMaxAmountBN(FORM_DEPOSIT, testToken);
     const amountWei = utils.calculateRealAmountWei(
       FORM_DEPOSIT,
       testToken,
-      maxAmount
+      maxAmountBN
     );
 
-    // when formatted, the numbers are the same but not in hex
+    // make sure that numbers are the same formatted and in hex
     console.log(
       {
         amountWei: utils.formatToken(
@@ -167,18 +157,18 @@ describe("utils", () => {
       FORM_DEPOSIT
     );
 
-    // expect(amountWei).toEqual(testToken.underlying.balance);
+    expect(amountWei).toEqual(testToken.underlying.balance);
   });
 
   test("calculateRealAmountWei FORM_WITHDRAW", () => {
-    const maxAmount = utils.calculateMaxAmount(FORM_WITHDRAW, testToken);
+    const maxAmountBN = utils.calculateMaxAmountBN(FORM_WITHDRAW, testToken);
     const amountWei = utils.calculateRealAmountWei(
       FORM_WITHDRAW,
       testToken,
-      maxAmount
+      maxAmountBN
     );
 
-    // when formatted, the numbers are the same but not in hex
+    // make sure that numbers are the same formatted and in hex
     console.log(
       {
         amountWei: utils.formatToken(
@@ -190,6 +180,6 @@ describe("utils", () => {
       FORM_WITHDRAW
     );
 
-    // expect(amountWei).toEqual(testToken.idle.balance);
+    expect(amountWei).toEqual(testToken.idle.balance);
   });
 });

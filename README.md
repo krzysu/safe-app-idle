@@ -69,6 +69,5 @@ To make the process faster you can first create a Safe on Mainnet, add some real
 
 ## Still to do
 
-- probably rewrite all number operations to BigNumber
 - test on mainnet
 - improve README

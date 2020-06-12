@@ -1,7 +1,7 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Form from "../components/Form";
-import { getIdleTokenId, formatToken } from "../utils";
+import { getIdleTokenId } from "../utils";
 import { FORM_DEPOSIT } from "../const";
 
 const Deposit = ({ state, appsSdk, onBackClick }) => {
@@ -13,14 +13,8 @@ const Deposit = ({ state, appsSdk, onBackClick }) => {
     console.log("DEPOSIT", {
       tokenId,
       strategyId,
-      amountWei: formatToken(
-        {
-          balance: amountWei,
-          decimals: underlying.decimals,
-        },
-        { precision: 18 }
-      ),
-      amountMax: formatToken(underlying, { precision: 18 }),
+      amountWei,
+      amountMax: underlying.balance,
     });
 
     const txs = [

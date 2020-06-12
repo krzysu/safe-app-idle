@@ -1,7 +1,7 @@
 import React from "react";
 import { Title } from "@gnosis.pm/safe-react-components";
 import Form from "../components/Form";
-import { getIdleTokenId, formatToken } from "../utils";
+import { getIdleTokenId } from "../utils";
 import { FORM_WITHDRAW } from "../const";
 
 const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
@@ -11,11 +11,8 @@ const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
     console.log("WITHDRAW", {
       tokenId,
       strategyId,
-      amountWei: formatToken(
-        { balance: amountWei, decimals: idle.decimals },
-        { precision: 18 }
-      ),
-      amountMax: formatToken(idle, { precision: 18 }),
+      amountWei,
+      amountMax: idle.balance,
     });
 
     const txs = [

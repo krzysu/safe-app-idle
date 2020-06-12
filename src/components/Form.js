@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Button, Text, TextField } from "@gnosis.pm/safe-react-components";
+import BigNumber from "bignumber.js";
 import TokenSelect from "./TokenSelect";
 import StrategySelect from "./StrategySelect";
 import {
-  calculateMaxAmount,
+  BNify,
+  calculateMaxAmountBN,
   calculateRealAmountWei,
   getIdleTokenId,
   formatToken,
   formatAPR,
   formatDepositBalance,
-  parseTextFieldValue,
-  roundToDecimals,
-  toFixedSpecial,
 } from "../utils";
 import { FORM_DEPOSIT, FORM_WITHDRAW } from "../const";
 
@@ -35,7 +34,7 @@ const getFormTokenBalance = (formToken, formType) => {
 const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
-  const [amount, setAmount] = useState(""); // user friendly amount always in underlying token
+  const [amountBN, setAmountBN] = useState(""); // user friendly amount always in underlying token
   const [realAmountWei, setRealAmountWei] = useState(""); // when withdraw -> amount of idle tokens; when deposit -> amount of underlying tokens
   const [isValid, setIsValid] = useState(false);
 
@@ -44,16 +43,16 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
   const [formToken, setFormToken] = useState(
     tokens[getIdleTokenId(strategyId, tokenId)]
   );
-  const [maxAmount, setMaxAmount] = useState(
-    calculateMaxAmount(formType, formToken)
+  const [maxAmountBN, setMaxAmountBN] = useState(
+    calculateMaxAmountBN(formType, formToken)
   );
 
   // update the token this form currently operates on, based on strategy and token dropdowns
   useEffect(() => {
     const newFormToken = tokens[getIdleTokenId(strategyId, tokenId)];
     setFormToken(newFormToken);
-    setMaxAmount(calculateMaxAmount(formType, newFormToken));
-    setAmount("");
+    setMaxAmountBN(calculateMaxAmountBN(formType, newFormToken));
+    setAmountBN("");
   }, [formType, tokens, tokenId, strategyId]);
 
   // update price on withdraw form
@@ -65,21 +64,21 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
 
   // simple form validation
   useEffect(() => {
-    if (amount !== "" && amount <= maxAmount && amount > 0) {
+    if (amountBN !== "" && amountBN.lte(maxAmountBN) && amountBN.gt(0)) {
       setIsValid(true);
     } else {
       setIsValid(false);
     }
-  }, [amount, maxAmount]);
+  }, [amountBN, maxAmountBN]);
 
-  // update realAmountWei when amount change
+  // update realAmountWei when amountBN change
   useEffect(() => {
-    if (amount !== "" && !isNaN(amount)) {
-      setRealAmountWei(calculateRealAmountWei(formType, formToken, amount));
+    if (amountBN !== "" && BigNumber.isBigNumber(amountBN)) {
+      setRealAmountWei(calculateRealAmountWei(formType, formToken, amountBN));
     } else {
       setRealAmountWei("");
     }
-  }, [formType, formToken, amount]);
+  }, [formType, formToken, amountBN]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -111,17 +110,15 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
           <TextField
             label="Amount"
             type="number"
-            value={toFixedSpecial(amount)}
+            placeholder="0.0"
+            value={
+              BigNumber.isBigNumber(amountBN) ? amountBN.toFixed() : amountBN
+            }
             onChange={(e) => {
               if (e.target.value !== "") {
-                setAmount(
-                  parseTextFieldValue(
-                    e.target.value,
-                    formToken.underlying.decimals
-                  )
-                );
+                setAmountBN(BNify(e.target.value));
               } else {
-                setAmount("");
+                setAmountBN("");
               }
             }}
           />
@@ -129,43 +126,28 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
             <button
               className={styles.link}
               type="button"
-              onClick={() =>
-                setAmount(
-                  roundToDecimals(maxAmount / 4, formToken.underlying.decimals)
-                )
-              }
+              onClick={() => setAmountBN(maxAmountBN.div(4))}
             >
               <Text size="md">25%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() =>
-                setAmount(
-                  roundToDecimals(maxAmount / 2, formToken.underlying.decimals)
-                )
-              }
+              onClick={() => setAmountBN(maxAmountBN.div(2))}
             >
               <Text size="md">50%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() =>
-                setAmount(
-                  roundToDecimals(
-                    (maxAmount * 3) / 4,
-                    formToken.underlying.decimals
-                  )
-                )
-              }
+              onClick={() => setAmountBN(maxAmountBN.times(3).div(4))}
             >
               <Text size="md">75%</Text>
             </button>
             <button
               className={styles.link}
               type="button"
-              onClick={() => setAmount(maxAmount)}
+              onClick={() => setAmountBN(maxAmountBN)}
             >
               <Text size="md">MAX</Text>
             </button>
