@@ -37,38 +37,11 @@ They work with these Rinkeby ERC20 tokens:
   - Rinkeby address 0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8
   - You can mint them yourself using Etherscan
 
-## How it could work to test with ganache mainnet fork (but it didn't work for me so far)
+## This app development is supported by Gnosis Grant
 
-Start local mainnet fork, you need Infura Project Id
-
-```
-yarn ganache:fork https://mainnet.infura.io/v3/INFURA_PROJECT_ID
-```
-
-Add new network in MetaMask.
-
-- Network Name: `Mainnet Fork`
-- New RPC URL: `http://127.0.0.1:8545`
-- ChainID: `1`
-
-You need to have a MetaMask account with some mainnet ETH or use one of the accounts provided by Ganache.
-
-Go to Gnosis Safe on Mainnet: [https://gnosis-safe.io/app](https://gnosis-safe.io/app)
-
-Create new Safe. Transfer some DAI, USDC and USDT to your new Safe. **Make sure that you are connected to Mainnet Fork all the time.**
-
-You can use script I prepared. Just configure proper env vars first.
-
-```
-node scripts/getFunds.js
-```
-
-Connect local version of Idle Safe App with Mainnet Fork Gnosis Safe.
-
-To make the process faster you can first create a Safe on Mainnet, add some real funds there, and then just test transactions on the Mainnet Fork.
+Read more [here](https://github.com/gnosis/GECO/pull/66)
 
 ## Still to do
 
-- remove console.logs
+- idle token icons in Assets Tab
 - test on mainnet
-- improve README

@@ -8,13 +8,6 @@ const Withdraw = ({ state, appsSdk, onBackClick, updateTokenPrice }) => {
   const handleWithdraw = ({ tokenId, strategyId, amountWei }) => {
     const { idle } = state.tokens[getIdleTokenId(strategyId, tokenId)];
 
-    console.log("WITHDRAW", {
-      tokenId,
-      strategyId,
-      amountWei,
-      amountMax: idle.balance,
-    });
-
     const txs = [
       {
         to: idle.contract.address,

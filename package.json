@@ -1,10 +1,11 @@
 {
   "name": "safe-app-idle",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-beta",
   "description": "Gnosis Safe App for Idle Finance",
   "private": true,
   "author": "Kris Urbas @krzysu",
   "license": "MIT",
+  "homepage": ".",
   "dependencies": {
     "@gnosis.pm/safe-apps-sdk": "^0.1.1",
     "@gnosis.pm/safe-react-components": "^0.1.2",

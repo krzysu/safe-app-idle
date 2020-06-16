@@ -10,13 +10,6 @@ const Deposit = ({ state, appsSdk, onBackClick }) => {
       getIdleTokenId(strategyId, tokenId)
     ];
 
-    console.log("DEPOSIT", {
-      tokenId,
-      strategyId,
-      amountWei,
-      amountMax: underlying.balance,
-    });
-
     const txs = [
       {
         to: underlying.contract.address,
