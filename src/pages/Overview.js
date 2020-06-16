@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Title } from "@gnosis.pm/safe-react-components";
+import { Text } from "@gnosis.pm/safe-react-components";
 import Table from "../components/Table";
 import { STRATEGY_MAXYIELD, STRATEGY_RISKADJUSTED } from "../const";
 
@@ -30,18 +30,18 @@ const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
   return (
     <React.Fragment>
       <div className={styles.headline}>
-        <Title size="xs">
+        <Text size="lg">
           Earn the yield you deserve without worry about finding the best
-          option, either if you want to optimize returns or risks.{" "}
+          option, either if you want to optimize returns or risks. <br />
           <a
             className={styles.link}
             href="https://idle.finance/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn more here.
+            Learn more
           </a>
-        </Title>
+        </Text>
       </div>
       <div className={styles.table}>
         <Table

@@ -98,10 +98,14 @@ const App = () => {
       )}
       <footer>
         <Text size="md">
-          Disclaimer: The author of this app did his best to provide fully
-          functional service. Despite that, the author doesn't take any
-          responsibility for the app. Interacting with this app is at your own
-          risk.
+          The source code of this app is available on{" "}
+          <a
+            href="https://github.com/krzysu/safe-app-idle"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Github
+          </a>
         </Text>
       </footer>
     </ThemeProvider>
