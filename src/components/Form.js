@@ -88,14 +88,22 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
         <label>
           <Text size="lg">Strategy</Text>
         </label>
-        <StrategySelect value={strategyId} onChange={setStrategyId} />
+        <StrategySelect
+          value={strategyId}
+          onChange={setStrategyId}
+          tokenId={tokenId}
+        />
       </div>
       <div>
         <label className={styles.assetLabel}>
           <Text size="lg">Asset</Text>
           <Text size="lg">{`APR: ${formatAPR(formToken.avgAPR)}`}</Text>
         </label>
-        <TokenSelect value={tokenId} onChange={setTokenId} />
+        <TokenSelect
+          value={tokenId}
+          onChange={setTokenId}
+          strategyId={strategyId}
+        />
       </div>
       <div className={styles.amount}>
         <label className={styles.amountLabel}>

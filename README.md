@@ -43,5 +43,8 @@ Read more [here](https://github.com/gnosis/GECO/pull/66)
 
 ## Still to do
 
-- idle token icons in Assets Tab
-- test on mainnet
+- add new Idle tokens
+- try to format numbers
+  - Cut off after the 5th decimal, no matter how many decimals there are: 0.12345
+  - Remove trailing zeroes, i.e. display 0.10000 as 0.1
+- update grant PR with new IPFS hash
