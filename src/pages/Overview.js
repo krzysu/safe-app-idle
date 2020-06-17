@@ -43,24 +43,28 @@ const Overview = ({ state, onDepositClick, onWithdrawClick }) => {
           </a>
         </Text>
       </div>
-      <div className={styles.table}>
-        <Table
-          iconSrc={maxYieldSrc}
-          title="Best-Yield - Maximize your returns"
-          tokens={maxYieldTokens}
-          onDepositClick={onDepositClick}
-          onWithdrawClick={onWithdrawClick}
-        />
-      </div>
-      <div className={styles.table}>
-        <Table
-          iconSrc={riskAdjustedSrc}
-          title="Risk-Adjusted - Optimize your risk exposure"
-          tokens={riskAdjustedTokens}
-          onDepositClick={onDepositClick}
-          onWithdrawClick={onWithdrawClick}
-        />
-      </div>
+      {maxYieldTokens.length > 0 && (
+        <div className={styles.table}>
+          <Table
+            iconSrc={maxYieldSrc}
+            title="Best-Yield - Maximize your returns"
+            tokens={maxYieldTokens}
+            onDepositClick={onDepositClick}
+            onWithdrawClick={onWithdrawClick}
+          />
+        </div>
+      )}
+      {riskAdjustedTokens.length > 0 && (
+        <div className={styles.table}>
+          <Table
+            iconSrc={riskAdjustedSrc}
+            title="Risk-Adjusted - Optimize your risk exposure"
+            tokens={riskAdjustedTokens}
+            onDepositClick={onDepositClick}
+            onWithdrawClick={onWithdrawClick}
+          />
+        </div>
+      )}
     </React.Fragment>
   );
 };

@@ -63,10 +63,10 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                 <div className={styles.tokenName}>
                   <img
                     src={token.logo}
-                    alt={token.underlying.symbol}
+                    alt={token.tokenId}
                     className={styles.logo}
                   />
-                  <Text size="lg">{token.underlying.symbol}</Text>
+                  <Text size="lg">{token.tokenId.toUpperCase()}</Text>
                 </div>
               </td>
               <td>

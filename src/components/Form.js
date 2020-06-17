@@ -31,7 +31,7 @@ const getFormTokenBalance = (formToken, formType) => {
 };
 
 const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
-  const { tokens } = state;
+  const { tokens, tokenSelectItems, strategySelectItems } = state;
 
   const [tokenId, setTokenId] = useState(state.currentTokenId);
   const [strategyId, setStrategyId] = useState(state.currentStrategyId);
@@ -91,6 +91,7 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
         <StrategySelect
           value={strategyId}
           onChange={setStrategyId}
+          items={strategySelectItems}
           tokenId={tokenId}
         />
       </div>
@@ -102,6 +103,7 @@ const Form = ({ state, onSubmit, onBackClick, updateTokenPrice, formType }) => {
         <TokenSelect
           value={tokenId}
           onChange={setTokenId}
+          items={tokenSelectItems}
           strategyId={strategyId}
         />
       </div>

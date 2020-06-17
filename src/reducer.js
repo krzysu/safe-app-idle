@@ -1,6 +1,8 @@
 import { PAGE_OVERVIEW } from "./const";
 import { getIdleTokenId } from "./utils";
+import { buildTokenSelectItems, buildStrategySelectItems } from "./selectItems";
 
+// example state
 export const initialState = {
   isLoaded: false,
   safeInfo: {
@@ -21,13 +23,11 @@ export const initialState = {
       tokenPrice: "",
       avgAPR: "",
       underlying: {
-        symbol: "",
         contract: "",
         balance: "",
         decimals: "",
       },
       idle: {
-        symbol: "",
         contract: "",
         balance: "",
         decimals: "",
@@ -37,6 +37,22 @@ export const initialState = {
   currentPage: PAGE_OVERVIEW,
   currentTokenId: "",
   currentStrategyId: "",
+  tokenSelectItems: [
+    {
+      id: "",
+      label: "",
+      iconUrl: "",
+      strategies: [],
+    },
+  ],
+  strategySelectItems: [
+    {
+      id: "",
+      label: "",
+      iconUrl: "",
+      tokens: [],
+    },
+  ],
 };
 
 const SET_SAFE_INFO = "SET_SAFE_INFO";
@@ -94,6 +110,8 @@ export const reducer = (state, action) => {
       return {
         ...state,
         tokens: action.payload,
+        tokenSelectItems: buildTokenSelectItems(action.payload),
+        strategySelectItems: buildStrategySelectItems(action.payload),
         isLoaded: true,
       };
 

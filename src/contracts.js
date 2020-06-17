@@ -28,7 +28,6 @@ const initToken = async (provider, safeAddress, token) => {
   const idleBalance = await idleContract.balanceOf(safeAddress);
   const avgAPR = await idleContract.getAvgAPR();
   const tokenPrice = await idleContract.tokenPrice();
-  const idleSymbol = await idleContract.symbol();
   const underAddress = await idleContract.token();
 
   const underContract = new ethers.Contract(
@@ -38,20 +37,17 @@ const initToken = async (provider, safeAddress, token) => {
   );
   const underBalance = await underContract.balanceOf(safeAddress);
   const underDecimals = await underContract.decimals();
-  const underSymbol = await underContract.symbol();
 
   return {
     ...token,
     tokenPrice,
     avgAPR,
     underlying: {
-      symbol: underSymbol,
       contract: underContract,
       balance: underBalance,
       decimals: underDecimals,
     },
     idle: {
-      symbol: idleSymbol, // is it in use?
       contract: idleContract,
       balance: idleBalance,
       decimals: token.decimals,
