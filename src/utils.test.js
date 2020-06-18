@@ -8,12 +8,10 @@ const testToken = {
   tokenPrice: ethers.utils.bigNumberify("0x0de7a2c23b812d04"),
   avgAPR: ethers.utils.bigNumberify("0x2879fd0f45b6d344"), // 2.92
   underlying: {
-    symbol: "DAI",
     balance: ethers.utils.bigNumberify("0x048e621450cf7aa163"), // 84.0468
     decimals: 18,
   },
   idle: {
-    symbol: "IDLE_DAI",
     balance: ethers.utils.bigNumberify("0xcfc3135c9a759fed"), // 15
     decimals: 18,
   },
@@ -26,12 +24,10 @@ const testTokenUsdc = {
   tokenPrice: ethers.utils.bigNumberify("0x0f4b5c"),
   avgAPR: ethers.utils.bigNumberify("0x30da33c43adca121"), // 3.52
   underlying: {
-    symbol: "USDC",
     balance: ethers.utils.bigNumberify("0x059aa57b"), // 94.0210
     decimals: 6,
   },
   idle: {
-    symbol: "IDLE_USDC",
     balance: ethers.utils.bigNumberify("0x453a3d792933b017"), // 5
     decimals: 18,
   },
@@ -44,12 +40,10 @@ const testTokenUsdt = {
   tokenPrice: ethers.utils.bigNumberify("0x0de7a2c23b812d04"),
   avgAPR: ethers.utils.bigNumberify("0x34a393b31ce0586b"),
   underlying: {
-    symbol: "DAI",
     balance: ethers.utils.bigNumberify("0x040681c1c709188bb8"),
     decimals: 18,
   },
   idle: {
-    symbol: "IDLE_TESTNETDAI",
     balance: ethers.utils.bigNumberify("0x0156d5955b9bf387f7"),
     decimals: 18,
   },
