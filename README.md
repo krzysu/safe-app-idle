@@ -37,14 +37,17 @@ They work with these Rinkeby ERC20 tokens:
   - Rinkeby address 0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8
   - You can mint them yourself using Etherscan
 
+## How to add new Idle asset
+
+- Add new underlying token id and token logo in `src/const.js`.
+- Add new Idle contract data (including address) to the `mainnet` array in `src/tokens.js`.
+- That's it! The rest of the app will just work fine with new Idle contract and underlying ERC-20 token.
+
 ## This app development is supported by Gnosis Grant
 
 Read more [here](https://github.com/gnosis/GECO/pull/66)
 
-## Still to do
+## Nice to have
 
-- add new Idle tokens
-- try to format numbers
-  - Cut off after the 5th decimal, no matter how many decimals there are: 0.12345
+- try to format numbers according to [Gnosis recommendations](https://github.com/gnosis/safe/wiki/How-to-format-amounts)
   - Remove trailing zeroes, i.e. display 0.10000 as 0.1
-- update grant PR with new IPFS hash

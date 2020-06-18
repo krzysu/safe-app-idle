@@ -72,13 +72,13 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
               <td>
                 <Text size="lg">
                   {formatToken(token.underlying, {
-                    precision: 4,
+                    precision: 5,
                   })}
                 </Text>
               </td>
               <td>
                 <Text size="lg">
-                  {formatDepositBalance(token, { precision: 4 })}
+                  {formatDepositBalance(token, { precision: 5 })}
                 </Text>
               </td>
               <td>
