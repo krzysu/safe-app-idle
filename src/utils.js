@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
-import { FORM_DEPOSIT, FORM_WITHDRAW } from "./const";
 import BigNumber from "bignumber.js";
+import { formatAmount } from "./formatAmount";
+import { FORM_DEPOSIT, FORM_WITHDRAW } from "./const";
 
 const balanceToBN = ({ balance, decimals }) => {
   const balanceString = ethers.utils.formatUnits(balance, decimals);
@@ -15,8 +16,8 @@ export const BNify = (s) => new BigNumber(String(s));
 export const getIdleTokenId = (strategyId, tokenId) =>
   `${strategyId}_${tokenId}`;
 
-export const formatToken = ({ balance, decimals }, { precision = 8 } = {}) =>
-  balanceToBN({ balance, decimals }).toFixed(precision);
+export const formatToken = ({ balance, decimals }) =>
+  formatAmount(balanceToBN({ balance, decimals }).toFixed());
 
 export const formatAPR = (balance) =>
   `${balanceToBN({ balance, decimals: 18 }).toFixed(2)}%`;
@@ -31,8 +32,8 @@ export const tokenPriceToBN = (token) =>
 export const depositBalanceToBN = (token) =>
   balanceToBN(token.idle).multipliedBy(tokenPriceToBN(token));
 
-export const formatDepositBalance = (token, { precision = 8 } = {}) =>
-  depositBalanceToBN(token).toFixed(precision);
+export const formatDepositBalance = (token) =>
+  formatAmount(depositBalanceToBN(token).toFixed());
 
 export const calculateMaxAmountBN = (formType, formToken) => {
   if (formType === FORM_DEPOSIT) {

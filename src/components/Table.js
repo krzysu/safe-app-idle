@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { formatToken, formatAPR, formatDepositBalance } from "../utils";
-import { formatAmount } from "../formatAmount";
 
 import styles from "./Table.module.css";
 
@@ -69,14 +68,10 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                 </div>
               </td>
               <td>
-                <Text size="lg">
-                  {formatAmount(formatToken(token.underlying))}
-                </Text>
+                <Text size="lg">{formatToken(token.underlying)}</Text>
               </td>
               <td>
-                <Text size="lg">
-                  {formatAmount(formatDepositBalance(token))}
-                </Text>
+                <Text size="lg">{formatDepositBalance(token)}</Text>
               </td>
               <td>
                 <Text size="lg">{formatAPR(token.avgAPR)}</Text>

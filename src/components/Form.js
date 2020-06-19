@@ -22,15 +22,11 @@ const buttonLabels = {
 
 const getFormTokenBalance = (formToken, formType) => {
   if (formType === FORM_DEPOSIT) {
-    return `Balance: ${formatToken(formToken.underlying, {
-      precision: formToken.underlying.decimals,
-    })}`;
+    return `Balance: ${formatToken(formToken.underlying)}`;
   }
 
   if (formType === FORM_WITHDRAW) {
-    return `Deposit balance: ${formatDepositBalance(formToken, {
-      precision: null,
-    })}`;
+    return `Deposit balance: ${formatDepositBalance(formToken)}`;
   }
 };
 

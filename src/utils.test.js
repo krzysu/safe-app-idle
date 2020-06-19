@@ -57,17 +57,8 @@ describe("utils", () => {
   });
 
   test("formatToken", () => {
-    expect(utils.formatToken(testToken.underlying)).toBe("84.04676153");
-    expect(
-      utils.formatToken(testToken.underlying, {
-        precision: 4,
-      })
-    ).toBe("84.0468");
-    expect(
-      utils.formatToken(testToken.underlying, {
-        precision: 18,
-      })
-    ).toBe("84.046761533252477283");
+    expect(utils.formatToken(testToken.underlying)).toBe("84.04676");
+    expect(utils.formatToken({ balance: "0", decimals: 18 })).toBe("0");
   });
 
   test("formatAPR", () => {
@@ -94,14 +85,8 @@ describe("utils", () => {
   });
 
   test("formatDepositBalance", () => {
-    expect(utils.formatDepositBalance(testToken)).toBe("15.00000000");
-    expect(utils.formatDepositBalance(testTokenUsdc)).toBe("5.00000000");
-    expect(utils.formatDepositBalance(testToken, { precision: 2 })).toBe(
-      "15.00"
-    );
-    expect(utils.formatDepositBalance(testTokenUsdc, { precision: 4 })).toBe(
-      "5.0000"
-    );
+    expect(utils.formatDepositBalance(testToken)).toBe("15");
+    expect(utils.formatDepositBalance(testTokenUsdc)).toBe("5");
   });
 
   test("calculateMaxAmountBN", () => {

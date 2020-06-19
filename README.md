@@ -47,7 +47,8 @@ They work with these Rinkeby ERC20 tokens:
 
 Read more [here](https://github.com/gnosis/GECO/pull/66)
 
-## Nice to have
+## License
 
-- try to format numbers according to [Gnosis recommendations](https://github.com/gnosis/safe/wiki/How-to-format-amounts)
-  - Remove trailing zeroes, i.e. display 0.10000 as 0.1
+Built by Kris Urbas ([@krzysu](https://twitter.com/krzysu)).
+
+The code in this repository is available under the MIT License.
