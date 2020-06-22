@@ -20,6 +20,7 @@ export const initialState = {
       tokenId: "",
 
       // set in contracts.js
+      isPaused: false,
       tokenPrice: "",
       avgAPR: "",
       underlying: {

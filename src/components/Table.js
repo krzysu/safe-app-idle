@@ -12,6 +12,7 @@ import styles from "./Table.module.css";
     strategyId: "",
     tokenId: "",
 
+    isPaused: "",
     tokenPrice: "",
     avgAPR: "",
     underlying: {
@@ -83,7 +84,9 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                       size="md"
                       color="primary"
                       variant="contained"
-                      disabled={hasZeroBalance(token.underlying)}
+                      disabled={
+                        hasZeroBalance(token.underlying) || token.isPaused
+                      }
                       onClick={onDepositClick(token.tokenId, token.strategyId)}
                     >
                       Deposit
@@ -101,6 +104,11 @@ const Table = ({ iconSrc, title, tokens, onDepositClick, onWithdrawClick }) => {
                     </Button>
                   </div>
                 </div>
+                {token.isPaused && (
+                  <Text size="lg" color="error" className={styles.pausedInfo}>
+                    The contract is paused. Deposits are disabled.
+                  </Text>
+                )}
               </td>
             </tr>
           ))}

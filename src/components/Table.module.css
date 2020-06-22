@@ -40,3 +40,7 @@
 .buttonWrap {
   margin-left: 0.5rem;
 }
+
+.pausedInfo {
+  text-align: right !important;
+}

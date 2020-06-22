@@ -25,6 +25,13 @@ const initToken = async (provider, safeAddress, token) => {
     tokens.idleAbi,
     provider
   );
+
+  let isPaused = false;
+  // rinkeby mocked contracts don't have paused function
+  try {
+    isPaused = await idleContract.paused();
+  } catch (e) {}
+
   const idleBalance = await idleContract.balanceOf(safeAddress);
   const avgAPR = await idleContract.getAvgAPR();
   const tokenPrice = await idleContract.tokenPrice();
@@ -40,6 +47,7 @@ const initToken = async (provider, safeAddress, token) => {
 
   return {
     ...token,
+    isPaused,
     tokenPrice,
     avgAPR,
     underlying: {
